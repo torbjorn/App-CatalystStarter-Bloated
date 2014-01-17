@@ -8,14 +8,12 @@ use Carp;
 use version; our $VERSION = qv('0.0.1');
 
 use IO::Prompter;
-use File::Which qw/which/;
+use File::Which qw(which);
 use File::Glob q(:bsd_glob);
-use Path::Tiny qw/path cwd/;
-
-use Catalyst::Helper;
+use Path::Tiny qw(path cwd);
+use Capture::Tiny q(:all);
 
 my $cat_dir = cwd;
-my $helper;
 
 sub _finalize_argv {
 
@@ -35,8 +33,19 @@ sub _set_cat_dir {
 
 sub _mk_app {
 
-    $helper = Catalyst::Helper->new();
-    _set_cat_dir( $helper->mk_app( $ARGV{"--name"} ) );
+    if ( $ARGV{"--verbose"} ) {
+        system "catalyst.pl" => $ARGV{"--name"};
+    }
+    else {
+        capture { system "catalyst.pl" => $ARGV{"--name"} };
+
+    }
+
+}
+
+sub _create_view {
+
+
 
 }
 
@@ -46,7 +55,10 @@ sub run {
     ## complete with logic not covered in G::E
     _finalize_argv;
 
-    ## 1: Create catalyst
+    ## 1: Create a catalyst
+    _mk_app;
+
+
 
 }
 
