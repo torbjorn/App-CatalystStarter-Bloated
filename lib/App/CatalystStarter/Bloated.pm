@@ -71,6 +71,12 @@ This document describes App::CatalystStarter::Bloated version 0.0.1
     Write a full description of the module and its features here.
     Use subsections (=head2, =head3) as appropriate.
 
+=head1 INTERFACE
+
+=head2 run
+
+The function that does it all.
+
 =head1 DIAGNOSTICS
 
 =for author to fill in:
