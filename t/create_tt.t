@@ -32,6 +32,6 @@ stdout_like sub { App::CatalystStarter::Bloated::_create_TT() },
     qr/\bcreated.*HTML2\.pm\b/,
     "verbose create";
 
-
+clean_cat_dir;
 
 done_testing
