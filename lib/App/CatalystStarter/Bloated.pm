@@ -13,7 +13,25 @@ use File::Glob q(:bsd_glob);
 use Path::Tiny qw(path cwd);
 use Capture::Tiny q(:all);
 
-my $cat_dir = cwd;
+my $cat_dir;
+
+sub _catalyst_path {
+    my $what = shift;
+    my @extra = shift;
+    if ( $what eq "C" ) {
+        @extra = ("lib", $ARGV{"--name"}, "Controller");
+    }
+    elsif ( $what eq "M" ) {
+        @extra = ("lib", $ARGV{"--name"}, "Model");
+    }
+    elsif ( $what eq "V" ) {
+        @extra = ("lib", $ARGV{"--name"}, "View");
+    }
+    else {
+        @extra = ($what);
+    }
+    return path($cat_dir,@extra,@_)->absolute;
+}
 
 sub _finalize_argv {
 
@@ -31,6 +49,13 @@ sub _set_cat_dir {
     return $cat_dir;
 }
 
+sub _creater {
+
+    my($s) = path($cat_dir, "script")->children(qr/create\.pl/);
+    return $s;
+
+}
+
 sub _mk_app {
 
     if ( $ARGV{"--verbose"} ) {
@@ -38,14 +63,24 @@ sub _mk_app {
     }
     else {
         capture { system "catalyst.pl" => $ARGV{"--name"} };
-
     }
+
+    _set_cat_dir( $ARGV{"--name"} );
 
 }
 
-sub _create_view {
+sub _create_TT {
 
+    return unless my $tt = $ARGV{"--TT"};
 
+    local @ARGV = ("view", $tt, "TT");
+
+    if ( $ARGV{"--verbose"} ) {
+        system _creater() => $ARGV{"--name"};
+    }
+    else {
+        capture { system _creater() => $ARGV{"--name"} };
+    }
 
 }
 
