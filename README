@@ -1,19 +1,18 @@
 App-CatalystStarter-Bloated version 0.0.1
 
-[ REPLACE THIS...
+Provides catalyst-fatstart.pl. It creates a new catalyst application
+for you using previously installed catalyst.pl.
 
-  The README is used to introduce the module and provide instructions on
-  how to install the module, any machine dependencies it may have (for
-  example C compilers and installed libraries) and any other information
-  that should be understood before the module is installed.
+In addition to that it also sets up commonly used components such as:
 
-  A README file is required for CPAN modules since CPAN extracts the
-  README file from a module distribution so that people browsing the
-  archive can use it get an idea of the modules uses. It is usually a
-  good idea to provide version information here so that people can
-  decide whether fixes for the module are worth downloading.
-]
+* A TT view with wrapper
+* A JSON view
+* A Model with an (optionally tested working) db connection
+* Downloads a html5 starter template from http://www.initializr.com and sets it up to work with the wrapper.
+* More as the need arises.
 
+It tries to be as helpful as possible, running interactively and
+offering meaningful tab completions.
 
 INSTALLATION
 
