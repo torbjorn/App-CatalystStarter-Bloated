@@ -12,7 +12,10 @@ use File::Which qw/which/;
 use File::Glob q(:bsd_glob);
 use Path::Tiny qw/path cwd/;
 
+use Catalyst::Helper;
+
 my $cat_dir = cwd;
+my $helper;
 
 sub _finalize_argv {
 
@@ -25,14 +28,15 @@ sub _finalize_argv {
 }
 
 # mainly needed for testing
-sub _change_cat_dir {
-    $cat_dir = $_[0];
+sub _set_cat_dir {
+    $cat_dir = $_[0] if defined $_[0];
+    return $cat_dir;
 }
 
-sub _helper {
+sub _mk_app {
 
-    my ($h) = path($cat_dir, "script")->children(qr/_create\.pl$/);
-    return $h->relative($cat_dir);
+    $helper = Catalyst::Helper->new();
+    _set_cat_dir( $helper->mk_app( $ARGV{"--name"} ) );
 
 }
 
@@ -42,7 +46,7 @@ sub run {
     ## complete with logic not covered in G::E
     _finalize_argv;
 
-
+    ## 1: Create catalyst
 
 }
 
