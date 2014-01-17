@@ -1,5 +1,6 @@
 package App::CatalystStarter::Bloated;
 
+use utf8::all;
 use warnings;
 use strict;
 use Carp;
@@ -7,7 +8,11 @@ use Carp;
 use version; our $VERSION = qv('0.0.1');
 
 use IO::Prompter;
-use Getopt::Euclid;
+use File::Which qw/which/;
+use File::Glob q(:bsd_glob);
+use Path::Tiny qw/path cwd/;
+
+my $cat_dir = cwd;
 
 sub _finalize_argv {
 
@@ -19,13 +24,37 @@ sub _finalize_argv {
 
 }
 
+# mainly needed for testing
+sub _change_cat_dir {
+    $cat_dir = $_[0];
+}
+
+sub _helper {
+
+    my ($h) = path($cat_dir, "script")->children(qr/_create\.pl$/);
+    return $h->relative($cat_dir);
+
+}
+
+## This does it all
+sub run {
+
+    ## complete with logic not covered in G::E
+    _finalize_argv;
+
+
+
+}
+
 1; # Magic true value required at end of module
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
-App::CatalystStarter::Bloated - [One line description of module's purpose here]
-
+App::CatalystStarter::Bloated - Tries really hard to set up all you
+might need for a catalyst app.
 
 =head1 VERSION
 
@@ -35,73 +64,6 @@ This document describes App::CatalystStarter::Bloated version 0.0.1
 
     # dont use this module, use the installed script
     # catalyst-fatstart.pl instead
-
-=head1 USAGE
-
-    catalyst-fatstart.pl [options] -n[ame]=name-of-catalyst-app
-
-=head1 REQUIRED ARGUMENTS
-
-=over
-
-=item -[-]n[ame] [=] <name>
-
-Name of catalyst app, what you would otherwise specify like this:
-catalyst.pl name
-
-=for Euclid:
-    name.type: str
-
-=back
-
-=head1 OPTIONS
-
-=over
-
-=item -[-]TT [=] [<HTML>]
-
-Add a Catalyst::View::TT view, defaults to YourApp::View::HTML.
-
-The ::HTML part of the package name can be changed by giving it an argument.
-
-The 'YourApp::View::' part of the package name is automatic and
-unchangable here.
-
-Also creates a root/index.tt2 and an empty wrapper.tt2 if none found.
-
-=for Euclid:
-    HTML.opt_default = "HTML"
-
-=item -[-]JSON [=] [<JSON>]
-
-Add a Catalyst::View::JSON view, defaults to YourApp::View::JSON. The
-same rules and options applies as to --TT
-
-=for Euclid:
-    JSON.opt_default = "JSON"
-
-=item -[-][no]html5 | -[-][no]h5
-
-Fetch a HTML5 template from http://www.initializr.com/ , so far only
-going for the Bootstrap version with defaults. Fills wrapper.tt2 with
-index.html and inserts [% content %] to go with the wrapper.
-
-=for Euclid:
-    false: --nohtml5
-
-=item --views
-
-Short hand for saying --TT HTML and --JSON JSON
-
-=item -[-]i[nteractive]
-
-Runs interactive, prompts with auto complete for available options.
-
-=item --version
-
-Prints version
-
-=back
 
 =head1 DESCRIPTION
 
