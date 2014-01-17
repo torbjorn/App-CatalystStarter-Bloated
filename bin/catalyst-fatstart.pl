@@ -161,6 +161,10 @@ model, and if need be, dbuser and dbpass
 =for Euclid:
     false: --noninteractive
 
+=item --test
+
+Run all tests when done
+
 =item --version
 
 Prints version
