@@ -30,15 +30,33 @@ cmp_deeply(
 );
 
 cmp_deeply(
-    parse_dbi_dsn("dbname=foo;host=bar;port=1234"),
-    { database => "foo", host => "bar", port => 1234 },
+    parse_dbi_dsn("dbname=foo;host=bar;port=2345"),
+    { database => "foo", host => "bar", port => 2345 },
     "database variation 1: dbname"
 );
 
 cmp_deeply(
-    parse_dbi_dsn("db=foo;host=bar;port=1234"),
-    { database => "foo", host => "bar", port => 1234 },
+    parse_dbi_dsn("db=foo;host=bar;port=3456"),
+    { database => "foo", host => "bar", port => 3456 },
     "database variation 2: db"
+);
+
+cmp_deeply(
+    parse_dbi_dsn(""),
+    { database => undef, host => undef, port => undef },
+    "empty string dsn"
+);
+
+cmp_deeply(
+    parse_dbi_dsn("db=foo;host=bar;port=3456;foo=bar;baz=test"),
+    { database => "foo", host => "bar", port => 3456, foo => "bar", baz => "test" },
+    "unknown parameters included"
+);
+
+is(
+    parse_dbi_dsn(),
+    undef,
+    "missing dsn"
 );
 
 done_testing;
