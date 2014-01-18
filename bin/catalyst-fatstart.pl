@@ -116,13 +116,31 @@ root/index.tt2.
 
 Short hand for saying --TT HTML and --JSON JSON
 
-=item -[-][no]model [=] <dsn> | -[-][no]dsn [=] <dsn>
+=item -[-]model [=] [<modelname>]
+
+Package name to use for your model. If modelname not specified,
+defaults to the catalyst name and "DB", ie "CatAppDB"
+
+You can also put a dsn in here. It will then be reassigned to the
+--dsn option, and the default model name will be used.
+
+=for Euclid:
+  modelname.opt_default = <AppNameDB>
+
+=item -[-]dsn [=] <dsn>
 
 A DSN to set up a db connection for one model in your catalyst app.
 
 If user and pass are not specified it will try the dsn without
 credentials. If it fails, it will prompt you for credentials unless
 you specify --noninteractive.
+
+=item -[-][no]dsnfix
+
+Checks and corrects the dsn input
+
+Fixes case of known drivers, adds missing leading dbi:, tries to
+verify and correct sqlite file paths, checks that hostnames can be resolved
 
 =item -[-]dbuser [=] <dbuser>
 

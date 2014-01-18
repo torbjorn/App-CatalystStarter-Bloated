@@ -11,13 +11,14 @@ use IO::Prompter;
 use File::Which qw(which);
 use File::Glob q(:bsd_glob);
 use Path::Tiny qw(path cwd);
-use Capture::Tiny q(:all);
+use Capture::Tiny qw(capture_stdout);
+use DBI;
 
 my $cat_dir;
 
 sub _catalyst_path {
     my $what = shift;
-    my @extra = shift;
+    my @extra;
     if ( $what eq "C" ) {
         @extra = ("lib", $ARGV{"--name"}, "Controller");
     }
@@ -35,11 +36,91 @@ sub _catalyst_path {
 
 sub _finalize_argv {
 
-    @ARGV{qw/-html5 --html5 -h5 --h5/} = (1)x4;
+    if ( !$ARGV{nohtml5}) {
+        @ARGV{qw/-html5 --html5 -h5 --h5/} = (1)x4;
+    }
 
     if ( $ARGV{'--views'} ) {
-        @ARGV{qw/-TT --TT -JSON --JSON/} = qw/HTML HTML JSON JSON/;
+        my %map;
+        @map{qw/-TT --TT -JSON --JSON/} = qw/HTML HTML JSON JSON/;
+        for (qw/-TT --TT -JSON --JSON/) {
+            $ARGV{$_} ||= $map{$_};
+        }
     }
+
+    if ( $ARGV{'--model'} ) {
+
+        if ($ARGV{'--model'} eq "1") {
+            $ARGV{'--model'} = $ARGV{"--name"} . "DB";
+        }
+
+        if ($ARGV{'--model'} =~ /^dbi:/ ) {
+            $ARGV{'--dsn'} = $ARGV{'--model'};
+            $ARGV{'--model'} = "AppNameDB";
+        }
+
+        $ARGV{'--model'} =~ s/^AppNameDB$/$ARGV{"--name"}DB/;
+
+
+        $ARGV{'-model'} = $ARGV{'--model'};
+    }
+
+    if ($ARGV{'--dsn'}) {
+
+
+
+        $ARGV{'-dsn'} = $ARGV{'--dsn'};
+    }
+
+}
+
+sub _prepare_dsn {
+
+    my $dsn = shift;
+
+    ## unlikely but guess it could happen
+    $dsn =~ s/^:/dbi:/;
+
+    ## if it doesn't start with dbi: by now, we'll nicely provide that
+    if ( lc substr( $dsn, 0, 4 ) ne "dbi:" ) {
+        $dsn = "dbi:" . $dsn;
+    }
+
+    ## taking care of case, should there be issues
+    $dsn =~ s/^dbi:/dbi:/i;
+
+    ## if it doesn't end with a ":" but has one alerady, well append
+    ## one, should be enough to make it parseable by DBI, ie dbi:Pg
+    ## will do
+    if ( $dsn =~ y/:// == 1 and $dsn =~ /^dbi:/ and $dsn !~ /:$/ ) {
+        $dsn .= ":";
+    }
+
+
+    return $dsn;
+
+}
+
+sub _parse_dsn {
+
+    my $dsn = _prepare_dsn shift ;
+
+    my @parsed = DBI->parse_dsn($dsn);
+
+    my %hash = (driver => $parsed[1]);
+
+    %hash = ( %hash, _parse_dbi_dsn($parsed[4]) );
+
+}
+
+## returns hash ref with: driver, dbname, host, port
+## this should have been somewhere on cpan
+sub _parse_dbi_dsn {
+
+    my $dsn = shift;
+
+
+
 
 }
 
@@ -58,29 +139,43 @@ sub _creater {
 
 sub _mk_app {
 
-    if ( $ARGV{"--verbose"} ) {
-        system "catalyst.pl" => $ARGV{"--name"};
-    }
-    else {
-        capture { system "catalyst.pl" => $ARGV{"--name"} };
-    }
+    _run_system( "catalyst.pl" => $ARGV{"--name"} );
 
     _set_cat_dir( $ARGV{"--name"} );
 
 }
 
+sub _run_system {
+
+    my @args = @_;
+
+    if ( $ARGV{"--verbose"} ) {
+        system @args;
+    }
+    else {
+        my $o = capture_stdout { system @args };
+    }
+
+}
+
+# create helpers
 sub _create_TT {
 
     return unless my $tt = $ARGV{"--TT"};
 
-    local @ARGV = ("view", $tt, "TT");
+    _run_system( _creater() => "view", $tt, "TT" );
 
-    if ( $ARGV{"--verbose"} ) {
-        system _creater() => $ARGV{"--name"};
-    }
-    else {
-        capture { system _creater() => $ARGV{"--name"} };
-    }
+}
+sub _create_JSON {
+
+    return unless my $json = $ARGV{"--JSON"};
+
+    _run_system( _creater() => "view", $json, "JSON" );
+
+}
+sub _create_model {
+
+
 
 }
 

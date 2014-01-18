@@ -19,10 +19,96 @@ goto_test_dir;
 App::CatalystStarter::Bloated::_mk_app();
 App::CatalystStarter::Bloated::_create_TT();
 
+test_dir( cat_name(), "lib", cat_name(), "Controller", "Foo.pm" )->touch;
+test_dir( cat_name(), "lib", cat_name(), "Controller", "Bar.pm" )->touch;
+test_dir( cat_name(), "lib", cat_name(), "View", "Bar.pm" )->touch;
+test_dir( cat_name(), "lib", cat_name(), "View", "Baz.pm" )->touch;
+test_dir( cat_name(), "lib", cat_name(), "Model", "Baz.pm" )->touch;
+test_dir( cat_name(), "lib", cat_name(), "Model", "Foo.pm" )->touch;
+
+# scripts dir
 is(
-    App::CatalystStarter::Bloated::_catalyst_path( "scripts" ),
-    path( proj_dir(), "t", "lib", "testdir", cat_name(), "scripts" )->absolute,
+    App::CatalystStarter::Bloated::_catalyst_path( "scripts" )->relative( proj_dir ),
+    test_dir( cat_name(), "scripts" )->relative( proj_dir ),
     "path to scripts"
 );
+
+subtest "path to controller" => sub {
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "C", "Foo.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "Controller", "Foo.pm")->relative( proj_dir ),
+        "path to Foo.pm controller"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "C", "Bar.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "Controller", "Bar.pm")->relative( proj_dir ),
+        "Bar.pm controller"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "C", "Root.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "Controller", "Root.pm")->relative( proj_dir ),
+        "Root.pm controller"
+    );
+
+};
+
+subtest "path to model" => sub {
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "M", "Baz.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "Model", "Baz.pm")->relative( proj_dir ),
+        "path to Baz.pm model"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "M", "Foo.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "Model", "Foo.pm")->relative( proj_dir ),
+        "Foo.pm model"
+    );
+
+};
+
+subtest "path to view" => sub {
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "V", "HTML.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "HTML.pm")->relative( proj_dir ),
+        "path to HTML.pm view"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "V", "Bar.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "Bar.pm")->relative( proj_dir ),
+        "path to Bar.pm view"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "V", "Bar.pm" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "Bar.pm")->relative( proj_dir ),
+        "Bar.pm view"
+    );
+
+};
+
+clean_cat_dir;
 
 done_testing;

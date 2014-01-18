@@ -11,6 +11,8 @@ use TestUtils;
 
 use_ok( "App::CatalystStarter::Bloated" );
 
+## Common defaults
+
 ## check that html5 gets initalized with right defaults
 {
     local %ARGV = test_argv;
@@ -21,6 +23,8 @@ use_ok( "App::CatalystStarter::Bloated" );
                 [1,1,1,1], "default flags are on" );
 
 }
+
+## Models
 
 ## check default model name convention
 {
@@ -55,6 +59,8 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 }
 
+## Views
+
 ## check that --views are sets up both views
 {
     local %ARGV = test_argv( "--views" => 1 );
@@ -78,6 +84,22 @@ use_ok( "App::CatalystStarter::Bloated" );
 
     cmp_deeply( [@ARGV{qw/-TT --TT -JSON --JSON/}],
                 [qw/MyView MyView JSON JSON/], "TT and JSON when --views");
+
+}
+
+## DSN
+
+## dsn set from --model
+{
+    local %ARGV = test_argv( "--model" => "dbi:Pg:dbname=foo" );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-model --model/}],
+                [qw/TestCatDB/x2], "dsn changed to model name" );
+
+    cmp_deeply( [@ARGV{qw/-dsn --dsn/}],
+                [qw/dbi:Pg:dbname=foo/x2], "dsn set from --model" );
 
 }
 

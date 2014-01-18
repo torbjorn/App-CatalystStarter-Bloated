@@ -27,7 +27,7 @@ stdout_is(
     "",
     "create app without verbose" );
 
-ok( -d path($proj_dir,"t/lib/testdir/MyCatApp"), "test app created" );
+ok( -d test_dir("MyCatApp"), "test app created" );
 
 clean_cat_dir;
 
@@ -39,7 +39,7 @@ stdout_like(
     qr(CatApp2),
     "create app with verbose" );
 
-ok( -d path($proj_dir,"t/lib/testdir/MyCatApp2"), "test app created" );
+ok( -d test_dir("MyCatApp2"), "test app created" );
 
 clean_cat_dir;
 
