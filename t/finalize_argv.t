@@ -112,6 +112,13 @@ use_ok( "App::CatalystStarter::Bloated" );
     cmp_deeply( [@ARGV{qw/-dsn --dsn/}],
                 [qw/dbi:Pg:dbname=foo/x2], "dsn corrected" );
 
+    ## also setting dsn should set --model
+    cmp_deeply(
+        [@ARGV{qw/-model --model/}],
+        [qw/TestCatDB/x2],
+        "model triggered by dsn"
+    );
+
 }
 
 done_testing;
