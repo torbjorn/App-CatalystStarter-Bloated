@@ -125,7 +125,12 @@ You can also put a dsn in here. It will then be reassigned to the
 --dsn option, and the default model name will be used.
 
 =for Euclid:
-  modelname.opt_default = <AppNameDB>
+  modelname.opt_default = "AppNameDB"
+
+=item -[-]schema [=] <SchemaClass>
+
+The name of the schema class to go with the dbic model. Defaults to
+AppName::Schema.
 
 =item -[-]dsn [=] <dsn>
 
