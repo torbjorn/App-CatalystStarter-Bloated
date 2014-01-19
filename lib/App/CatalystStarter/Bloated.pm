@@ -80,16 +80,33 @@ sub _finalize_argv {
     if ($ARGV{'--dsn'}) {
         $ARGV{'--dsn'} = _prepare_dsn( $ARGV{'--dsn'} );
         $ARGV{'-dsn'} = $ARGV{'--dsn'};
+
+        if ( not defined $ARGV{'--model'} ) {
+            $ARGV{'--model'} = 1;
+        }
+
     }
 
     if ( $ARGV{'--model'} ) {
 
-        if ( $ARGV{'--model'} eq "1" ) {
-            $ARGV{'--model'} = $ARGV{"--name"} . "DB";
+        if ( $ARGV{'--model'} eq '1' ) {
+            $ARGV{'--model'} = $ARGV{'--name'} . 'DB';
         }
 
-        $ARGV{'--model'} =~ s/^AppNameDB$/$ARGV{"--name"}DB/;
+        $ARGV{'--model'} =~ s/^AppNameDB$/$ARGV{'--name'}DB/;
         $ARGV{'-model'} = $ARGV{'--model'};
+
+        if ( not $ARGV{'--schema'} or $ARGV{'--schema'} eq "1" ) {
+            $ARGV{'--schema'} = $ARGV{'--name'} . '::Schema';
+
+            $ARGV{'-schema'} = $ARGV{'--schema'};
+
+        }
+
+    }
+    else {
+        delete $ARGV{'--schema'};
+        delete $ARGV{'-schema'};
     }
 
 }
