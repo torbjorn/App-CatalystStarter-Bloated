@@ -96,13 +96,22 @@ use_ok( "App::CatalystStarter::Bloated" );
     App::CatalystStarter::Bloated::_finalize_argv();
 
     cmp_deeply( [@ARGV{qw/-model --model/}],
-                [qw/TestCatDB/x2], "dsn changed to model name" );
+                [qw/TestCatDB/x2], "dsn set from model name" );
 
     cmp_deeply( [@ARGV{qw/-dsn --dsn/}],
                 [qw/dbi:Pg:dbname=foo/x2], "dsn set from --model" );
 
 }
 
+## a bad dsn that gets fixed
+{
+    local %ARGV = test_argv( "--dsn" => "pg:dbname=foo" );
 
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-dsn --dsn/}],
+                [qw/dbi:Pg:dbname=foo/x2], "dsn corrected" );
+
+}
 
 done_testing;
