@@ -121,4 +121,33 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 }
 
+## a model triggers --schema that gets fixed
+{
+    local %ARGV = test_argv( "--model" => "1" );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply(
+        [@ARGV{qw/-schema --schema/}],
+        [qw/TestCat::Schema/x2],
+        "schema triggered by model"
+    );
+
+}
+
+## a valid --schema is untouched
+{
+    local %ARGV = test_argv( "--model" => "1",
+                             "--schema" => "Foo", "-schema" => "Foo" );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply(
+        [@ARGV{qw/-schema --schema/}],
+        [qw/Foo/x2],
+        "valid schema is ok"
+    );
+
+}
+
 done_testing;
