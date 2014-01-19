@@ -20,4 +20,12 @@ cmp_deeply(
     "case fix on unknown driver"
 );
 
+note( "one input value only" );
+
+is(
+    App::CatalystStarter::Bloated::_fix_dbi_driver_case("pg"),
+    "Pg",
+    "one argument, pg"
+);
+
 done_testing;
