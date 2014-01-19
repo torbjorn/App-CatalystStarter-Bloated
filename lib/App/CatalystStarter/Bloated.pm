@@ -14,6 +14,8 @@ use Path::Tiny qw(path cwd);
 use Capture::Tiny qw(capture_stdout);
 use DBI;
 
+use List::Util qw/first/;
+
 my $cat_dir;
 
 sub _catalyst_path {
@@ -33,6 +35,28 @@ sub _catalyst_path {
     }
     return path($cat_dir,@extra,@_)->absolute;
 }
+sub _set_cat_dir {
+    $cat_dir = $_[0] if defined $_[0];
+    return $cat_dir;
+}
+sub _creater {
+
+    my($s) = path($cat_dir, "script")->children(qr/create\.pl/);
+    return $s;
+
+}
+sub _run_system {
+
+    my @args = @_;
+
+    if ( $ARGV{"--verbose"} ) {
+        system @args;
+    }
+    else {
+        my $o = capture_stdout { system @args };
+    }
+
+}
 
 sub _finalize_argv {
 
@@ -48,32 +72,30 @@ sub _finalize_argv {
         }
     }
 
-    if ( $ARGV{'--model'} ) {
-
-        if ($ARGV{'--model'} eq "1") {
-            $ARGV{'--model'} = $ARGV{"--name"} . "DB";
-        }
-
-        if ($ARGV{'--model'} =~ /^dbi:/ ) {
-            $ARGV{'--dsn'} = $ARGV{'--model'};
-            $ARGV{'--model'} = "AppNameDB";
-        }
-
-        $ARGV{'--model'} =~ s/^AppNameDB$/$ARGV{"--name"}DB/;
-
-
-        $ARGV{'-model'} = $ARGV{'--model'};
+    if (defined $ARGV{'--model'} and $ARGV{'--model'} =~ /^dbi:/i ) {
+        $ARGV{'--dsn'} = $ARGV{'--model'};
+        $ARGV{'--model'} = 1;
     }
 
     if ($ARGV{'--dsn'}) {
-
-
-
+        $ARGV{'--dsn'} = _prepare_dsn( $ARGV{'--dsn'} );
         $ARGV{'-dsn'} = $ARGV{'--dsn'};
+    }
+
+    if ( $ARGV{'--model'} ) {
+
+        if ( $ARGV{'--model'} eq "1" ) {
+            $ARGV{'--model'} = $ARGV{"--name"} . "DB";
+        }
+
+        $ARGV{'--model'} =~ s/^AppNameDB$/$ARGV{"--name"}DB/;
+        $ARGV{'-model'} = $ARGV{'--model'};
     }
 
 }
 
+## returns hash ref with: driver, database, host, port and anything
+## else that might be there
 sub _prepare_dsn {
 
     my $dsn = shift;
@@ -96,47 +118,80 @@ sub _prepare_dsn {
         $dsn .= ":";
     }
 
+    ## offer to correct the driver
+    my @parts = DBI->parse_dsn( $dsn );
+    my $driver = _fix_dbi_driver_case( $parts[1] );
 
-    return $dsn;
+    my $fixed_dsn = sprintf(
+        "%s:%s%s:%s",
+        $parts[0],
+        $driver, $parts[2]||"",
+        $parts[4]
+    );
+
+    return $fixed_dsn;
 
 }
+sub _parse_dbi_dsn {
 
+    my $dsn = shift;
+
+    return unless defined $dsn;
+
+    my @pairs = split /;/, $dsn;
+
+    my %data;
+
+    for (@pairs) {
+        my ($k,$v) = split /=/, $_;
+        $data{$k} = $v;
+    }
+
+    my $db = first {$_} delete @data{qw/db database dbname/};
+    $data{database} = $db;
+
+    my $host = first {$_} delete @data{qw/host hostname/};
+    $data{host} = $host;
+
+    $data{port} //= undef;
+
+    return %data;
+
+}
 sub _parse_dsn {
 
     my $dsn = _prepare_dsn shift ;
 
     my @parsed = DBI->parse_dsn($dsn);
 
-    my %hash = (driver => $parsed[1]);
+    my $driver = _fix_dbi_driver_case($parsed[1]);
 
-    %hash = ( %hash, _parse_dbi_dsn($parsed[4]) );
+    my %hash = (driver => $driver);
 
-}
+    my %extra = _parse_dbi_dsn($parsed[4]);
 
-## returns hash ref with: driver, dbname, host, port
-## this should have been somewhere on cpan
-sub _parse_dbi_dsn {
+    @hash{qw/database host port/} = @extra{qw/database host port/};
 
-    my $dsn = shift;
-
-
-
+    return %hash;
 
 }
+sub _known_drivers {
+    return qw/ ADO CSV DB2 DBM Firebird MaxDB mSQL mysql mysqlPP ODBC
+               Oracle Pg PgPP PO SQLite SQLite2 TSM XBase /;
+}
+sub _fix_dbi_driver_case {
+    my @args = @_;
+    my %hash;
+    $hash{ lc $_ } = $_ for _known_drivers;
+    ($_ = $hash{lc $_} || $_) for @args;
 
-# mainly needed for testing
-sub _set_cat_dir {
-    $cat_dir = $_[0] if defined $_[0];
-    return $cat_dir;
+    if (not wantarray and @args == 1) {
+        return $args[0];
+    }
+    return @args;
 }
 
-sub _creater {
-
-    my($s) = path($cat_dir, "script")->children(qr/create\.pl/);
-    return $s;
-
-}
-
+# create functions
 sub _mk_app {
 
     _run_system( "catalyst.pl" => $ARGV{"--name"} );
@@ -144,21 +199,6 @@ sub _mk_app {
     _set_cat_dir( $ARGV{"--name"} );
 
 }
-
-sub _run_system {
-
-    my @args = @_;
-
-    if ( $ARGV{"--verbose"} ) {
-        system @args;
-    }
-    else {
-        my $o = capture_stdout { system @args };
-    }
-
-}
-
-# create helpers
 sub _create_TT {
 
     return unless my $tt = $ARGV{"--TT"};
