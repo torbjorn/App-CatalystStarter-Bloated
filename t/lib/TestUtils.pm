@@ -28,6 +28,14 @@ sub cat_name {
 
 sub test_argv {
     my %argv = ("--name" => cat_name(), @_);
+
+    while ( my($k,$v) = each %argv ) {
+        if ( $k =~ /^--/ ) {
+            my $k2 = substr $k, 1;
+            $argv{$k2} = $argv{$k};
+        }
+    }
+
     return %argv;
 }
 
@@ -41,6 +49,7 @@ sub clean_cat_dir {
 
 END {
     if ( test_dir->children ) {
-        warn path($0)->basename, ": I did not clean up testdir after me, I am a bad script\n";
+        warn path($0)->basename,
+            ": I did not clean up testdir after me, I am a bad script\n";
     }
 }
