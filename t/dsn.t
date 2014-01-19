@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use Test::Most;
-use Test::FailWarnings;
+# use Test::FailWarnings;
 
 use_ok "App::CatalystStarter::Bloated";
 
@@ -17,6 +17,13 @@ is( prepare_dsn( "dbi:Pg" ), "dbi:Pg:", "lacking 2nd :" );
 is( prepare_dsn( "dBi:Pg" ), "dbi:Pg:", "bad case in dbi" );
 is( prepare_dsn( "Pg:dbname=foo" ), "dbi:Pg:dbname=foo", "missing leading dbi:" );
 is( prepare_dsn( ":Pg" ), "dbi:Pg:", "missing leading dbi" );
+
+## some wrong cases
+is( prepare_dsn( "pg" ), "dbi:Pg:", "mis-case'd driver name 1" );
+is( prepare_dsn( "dbi:PG" ), "dbi:Pg:", "mis-case'd driver name 2" );
+is( prepare_dsn( "dBi:pG" ), "dbi:Pg:", "mis-case'd driver name 3" );
+is( prepare_dsn( "PG:dbname=foo" ), "dbi:Pg:dbname=foo", "mis-case'd driver name 4" );
+is( prepare_dsn( ":pg" ), "dbi:Pg:", "mis-case'd driver name 5" );
 
 note( "parse_dbi_dsn" );
 local *parse_dbi_dsn = *App::CatalystStarter::Bloated::_parse_dbi_dsn;
