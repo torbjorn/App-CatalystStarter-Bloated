@@ -20,14 +20,14 @@ use TestUtils;
         [App::CatalystStarter::Bloated::_parse_pgpass()],
         [
             {
-                server => "localhost",
+                host => "localhost",
                 port => 5432,
                 database => "thedb",
                 user => "user",
                 pass => "pass",
             },
             {
-                server => "someserver",
+                host => "someserver",
                 port => 5433,
                 database => "otherdb",
                 user => "user2",
@@ -38,5 +38,30 @@ use TestUtils;
     );
 
 }
+
+is( App::CatalystStarter::Bloated::_pgpass_entry_to_dsn
+    (
+        {host=>"foo", port=>5433, database=>"bar"}
+    ),
+    "dbi:Pg:database=bar;host=foo;port=5433",
+    "pgpass with no defaults"
+);
+
+is( App::CatalystStarter::Bloated::_pgpass_entry_to_dsn
+    (
+        {host=>"localhost.localdomain", port=>5432, database=>"bar"}
+    ),
+    "dbi:Pg:database=bar",
+    "pgpass with localhost and default port"
+);
+
+is( App::CatalystStarter::Bloated::_pgpass_entry_to_dsn
+    (
+        {host=>"localhost", port=>5432, database=>"bar"}
+    ),
+    "dbi:Pg:database=bar",
+    "pgpass with localhost and default port #2"
+);
+
 
 done_testing;
