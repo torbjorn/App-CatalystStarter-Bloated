@@ -11,7 +11,7 @@ use TestUtils;
 
 use_ok( "App::CatalystStarter::Bloated" );
 
-## Common defaults
+## html5 defaults
 
 ## check that html5 gets initalized with right defaults
 {
@@ -20,17 +20,63 @@ use_ok( "App::CatalystStarter::Bloated" );
     App::CatalystStarter::Bloated::_finalize_argv();
 
     cmp_deeply( [@ARGV{qw/-html5 --html5 -h5 --h5/}],
-                [1,1,1,1], "default flags are on" );
+                [1,1,1,1], "html5 defaults" );
 
 }
 
+## Check that they arent set when --no prefixed
 {
     local %ARGV = test_argv( '--nohtml5' => 1 );
 
     App::CatalystStarter::Bloated::_finalize_argv();
 
     cmp_deeply( [@ARGV{qw/-html5 --html5 -h5 --h5/}],
-                [(undef)x4], "default flags are on" );
+                [(undef)x4], "html5 defaults not set with --no" );
+
+}
+
+## pgpass defaults
+
+## check that pgpass gets initalized with right defaults
+{
+    local %ARGV = test_argv;
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-pgpass --pgpass/}],
+                [1,1], "pgpass defaults" );
+
+}
+
+## Check that they arent set when --no prefixed
+{
+    local %ARGV = test_argv( '--nopgpass' => 1 );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-pgpass --pgpass/}],
+                [(undef)x2], "pgpass flags not set when --no" );
+
+}
+
+## check that dnsfix gets initalized with right defaults
+{
+    local %ARGV = test_argv;
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-dsnfix --dsnfix/}],
+                [1,1], "dsnfix defaults" );
+
+}
+
+{
+    local %ARGV = test_argv( '--nodsnfix' => 1 );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-dsnfix --dsnfix/}],
+                [(undef)x2], "dsnfix flags not set when --no" );
 
 }
 
