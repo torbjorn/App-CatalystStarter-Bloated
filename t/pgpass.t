@@ -11,7 +11,7 @@ use_ok "App::CatalystStarter::Bloated";
 use lib 't/lib';
 use TestUtils;
 
-## parse .pgpass
+note( "parse .pgpass" );
 {
 
     local $ENV{HOME} = "t/lib";
@@ -39,6 +39,7 @@ use TestUtils;
 
 }
 
+note( "pgpass entry to dsn" );
 is( App::CatalystStarter::Bloated::_pgpass_entry_to_dsn
     (
         {host=>"foo", port=>5433, database=>"bar"}
