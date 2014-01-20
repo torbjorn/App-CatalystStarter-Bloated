@@ -76,10 +76,10 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 ## check that --views doesnt touch existnig --tt or --json
 {
-    local %ARGV = test_argv( "--views" => 1, "--TT" => "MyView", "-TT" => "MyView" );
+    local %ARGV = test_argv( "--views" => 1, "--TT" => "MyView" );
 
     ## check that --views trigger both TT and JSON
-    delete @ARGV{qw/--JSON/};
+    delete @ARGV{qw/--JSON -JSON/};
     App::CatalystStarter::Bloated::_finalize_argv();
 
     cmp_deeply( [@ARGV{qw/-TT --TT -JSON --JSON/}],
@@ -121,6 +121,20 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 }
 
+## nodsnfix prevents fixing
+{
+    local %ARGV = test_argv( "--dsn" => "foo",
+                             "--nodsnfix" => 1 );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-dsn --dsn/}],
+                [qw/foo/x2],
+                "dsn not corrected when instructed not to" );
+}
+
+## --schema related
+
 ## a model triggers --schema that gets fixed
 {
     local %ARGV = test_argv( "--model" => "1" );
@@ -135,10 +149,10 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 }
 
-## a valid --schema is untouched
+## a specified --schema is untouched
 {
     local %ARGV = test_argv( "--model" => "1",
-                             "--schema" => "Foo", "-schema" => "Foo" );
+                             "--schema" => "Foo" );
 
     App::CatalystStarter::Bloated::_finalize_argv();
 
