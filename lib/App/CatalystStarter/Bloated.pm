@@ -16,6 +16,8 @@ use File::Glob q(:bsd_glob);
 use Path::Tiny qw(path cwd);
 use Capture::Tiny qw(capture_stdout);
 use DBI;
+use Time::HiRes qw/ualarm/;
+use Sys::SigAction qw(timeout_call);
 
 use List::Util qw/first/;
 use List::MoreUtils qw/all/;
@@ -235,7 +237,10 @@ sub _parse_pgpass {
         my @values = split /:/, $_;
 
         my %row;
-        @row{qw/server port database user pass/} = @values;
+        @row{qw/host port database user pass/} = @values;
+
+        ## not sure if this can ever happen
+        $row{port} //= 5432;
 
         push @entries, \%row;
 
@@ -258,8 +263,49 @@ sub _complete_dsn_from_pgpass {
         return $dsn;
     }
 
+    ## if all is already set, no point to linger
+    if ( all {$_} (@dsn{qw/database port host/},@ARGV{qw/--dbuser --dbpass/})  ) {
+        return $dsn;
+    }
+
+    my @candidate_pgpass =
+        do {
+
+            ## adds default port so that some matches aren't lost
+            local $dsn{port} //= 5432;
+
+            grep {
+
+                all {
+                    ## This allows flexible matching, as long as there
+                    ## is one single match, it could be on anything of
+                    ## host, db or port
+                    undef $dsn{$_} or
+                        $dsn{$_} eq $_->{$_}||"" ## should there be an
+                                                 ## undef from the
+                                                 ## dns, this will
+                                                 ## avoid the warning
+                } qw/host database port/;
+
+            } @pgpass;
+        };
+
+    if ( @candidate_pgpass == 1 ) {
+        _fill_dsn_parameters_from_pgpass_data( %dsn, $candidate_pgpass[0] );
+    }
 
 
+
+}
+sub _fill_dsn_parameters_from_pgpass_data {
+
+    ## $data is a single entry as parsed from .pgpass
+    my( $dsn_hash, $data );
+
+    $dsn_hash->{$_} //= $data->{$_} for qw
+        /
+            host database port
+        /;
 
 }
 

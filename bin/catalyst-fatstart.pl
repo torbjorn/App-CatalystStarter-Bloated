@@ -170,7 +170,7 @@ It will set --dbuser and --dbpass as spropriate unless they are set.
 
 Username for the db connection.
 
-=item -[-]dbuser [=] <dbpass>
+=item -[-]dbpass [=] <dbpass>
 
 Db for the db connection.
 
@@ -202,6 +202,18 @@ model, and if need be, dbuser and dbpass
 
 =for Euclid:
     false: --noninteractive
+
+=item -[-][no]con[[nection]test]
+
+Test db connection after and during setup. This is also used to help
+select pgpass entry if there are conflicting entries.
+
+=item --[connection-]timeout [=] <timeout>
+
+Timeout for connection attempts, defaults to 200ms.
+
+=for Euclid:
+   timeout.default = 200
 
 =item -[-][no]test
 
