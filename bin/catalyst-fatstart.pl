@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use v5.10.1;
+
 use utf8::all;
 use strict;
 use autodie;
@@ -149,9 +151,20 @@ Checks and corrects the dsn input
 Fixes case of known drivers, adds missing leading dbi:, tries to
 verify and correct sqlite file paths, checks that hostnames can be resolved
 
+=for Euclid:
+    false: --nodsnfix
+
 =item -[-][no]pgpass
 
 If set, will look in ~/.pgpass to complete dbi information.
+
+Will currently only suplement the dsn if it finds a matching database
+name.
+
+It will set --dbuser and --dbpass as spropriate unless they are set.
+
+=for Euclid:
+    false: --nopgpass
 
 =item -[-]dbuser [=] <dbuser>
 
@@ -190,9 +203,12 @@ model, and if need be, dbuser and dbpass
 =for Euclid:
     false: --noninteractive
 
-=item --test
+=item -[-][no]test
 
 Run all tests when done
+
+=for Euclid:
+    false: --notest
 
 =item --version
 
