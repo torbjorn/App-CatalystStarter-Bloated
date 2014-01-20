@@ -24,6 +24,16 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 }
 
+{
+    local %ARGV = test_argv( '--nohtml5' => 1 );
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    cmp_deeply( [@ARGV{qw/-html5 --html5 -h5 --h5/}],
+                [(undef)x4], "default flags are on" );
+
+}
+
 ## Models
 
 ## check default model name convention
