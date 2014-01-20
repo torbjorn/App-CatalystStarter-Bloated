@@ -24,6 +24,7 @@ use List::MoreUtils qw/all/;
 
 my $cat_dir;
 
+## a helper for easy access to paths
 sub _catalyst_path {
     my $what = shift;
     my @extra;
@@ -40,7 +41,7 @@ sub _catalyst_path {
         @extra = ($what);
     }
     return path($cat_dir,@extra,@_)->absolute;
-}
+} ## catalyst_path.t
 sub _set_cat_dir {
     $cat_dir = $_[0] if defined $_[0];
     return $cat_dir;
@@ -50,7 +51,7 @@ sub _creater {
     my($s) = path($cat_dir, "script")->children(qr/create\.pl/);
     return $s;
 
-}
+} ## creater.t
 sub _run_system {
 
     my @args = @_;
@@ -126,7 +127,7 @@ sub _finalize_argv {
         delete $ARGV{'-schema'};
     }
 
-}
+} ## finalize_argv.t
 
 ## returns hash ref with: driver, database, host, port and anything
 ## else that might be there
@@ -165,7 +166,7 @@ sub _prepare_dsn {
 
     return $fixed_dsn;
 
-}
+} ## dsn.t
 sub _parse_dbi_dsn {
 
     my $dsn = shift;
@@ -191,7 +192,7 @@ sub _parse_dbi_dsn {
 
     return %data;
 
-}
+} ## dsn.t
 sub _parse_dsn {
 
     my $dsn = _prepare_dsn shift ;
@@ -208,7 +209,7 @@ sub _parse_dsn {
 
     return %hash;
 
-}
+} ## dsn.t
 sub _known_drivers {
     return qw/ ADO CSV DB2 DBM Firebird MaxDB mSQL mysql mysqlPP ODBC
                Oracle Pg PgPP PO SQLite SQLite2 TSM XBase /;
@@ -223,7 +224,7 @@ sub _fix_dbi_driver_case {
         return $args[0];
     }
     return @args;
-}
+} ## fix_dbi_driver_case.t
 
 ## pgpass functions
 sub _parse_pgpass {
@@ -248,7 +249,29 @@ sub _parse_pgpass {
 
     return @entries;
 
-}
+} ## pgpass.t
+sub _pgpass_entry_to_dsn {
+
+    my $entry = shift;
+    my $dsn = "dbi:Pg:";
+
+    if ( my $d = $entry->{database} ) {
+        $dsn .= "database=" . $d . ";";
+    }
+    if ( my $h = $entry->{host} ) {
+        ## don't add if it's localhost
+        $dsn .= "host=" . $h . ";" if $h !~ /^localhost(?:$|\.)/;
+    }
+    if ( my $p = $entry->{port} ) {
+        ## don't add if its default 5432
+        $dsn .= "port=" . $p . ";" if $p != 5432;
+    }
+
+    $dsn =~ s/;$//;
+
+    return $dsn;
+
+} ## pgpass.t
 sub _complete_dsn_from_pgpass {
 
     my $dsn = shift;
@@ -290,10 +313,23 @@ sub _complete_dsn_from_pgpass {
             } @pgpass;
         };
 
-    if ( @candidate_pgpass == 1 ) {
+    if ( not @candidate_pgpass) {
+        return $dsn;
+    }
+    elsif ( @candidate_pgpass == 1 ) {
         _fill_dsn_parameters_from_pgpass_data( %dsn, $candidate_pgpass[0] );
     }
+    elsif ( @candidate_pgpass < 6 and not $ARGV{'--noconnectiontest'} ) {
 
+        my @passed_candidates = grep {
+
+        }
+
+    }
+    else {
+       ## too many matches, don't bother
+        return $dsn;
+    }
 
 
 }
@@ -316,21 +352,21 @@ sub _mk_app {
 
     _set_cat_dir( $ARGV{"--name"} );
 
-}
+} ## mk_app.t
 sub _create_TT {
 
     return unless my $tt = $ARGV{"--TT"};
 
     _run_system( _creater() => "view", $tt, "TT" );
 
-}
+} ## create.tt
 sub _create_JSON {
 
     return unless my $json = $ARGV{"--JSON"};
 
     _run_system( _creater() => "view", $json, "JSON" );
 
-}
+} ## create_json.tt
 sub _create_model {
 
 
