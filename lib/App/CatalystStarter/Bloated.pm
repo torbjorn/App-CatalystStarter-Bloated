@@ -243,6 +243,10 @@ sub _parse_pgpass {
 }
 sub _complete_dsn_from_pgpass {
 
+    my $dsn = shift;
+
+    my %dsn = _parse_dsn( $dsn );
+
 
 
 }
