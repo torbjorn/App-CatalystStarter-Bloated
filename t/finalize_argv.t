@@ -70,6 +70,7 @@ use_ok( "App::CatalystStarter::Bloated" );
 
 }
 
+## nodsnfix works
 {
     local %ARGV = test_argv( '--nodsnfix' => 1 );
 
@@ -79,6 +80,7 @@ use_ok( "App::CatalystStarter::Bloated" );
                 [(undef)x2], "dsnfix flags not set when --no" );
 
 }
+
 
 ## Models
 
