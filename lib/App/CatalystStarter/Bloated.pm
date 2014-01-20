@@ -338,10 +338,7 @@ sub _fill_dsn_parameters_from_pgpass_data {
     ## $data is a single entry as parsed from .pgpass
     my( $dsn_hash, $data );
 
-    $dsn_hash->{$_} //= $data->{$_} for qw
-        /
-            host database port
-        /;
+    $dsn_hash->{$_} //= $data->{$_} for qw/host database port/;
 
 }
 
