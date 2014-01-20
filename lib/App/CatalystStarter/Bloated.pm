@@ -1,5 +1,7 @@
 package App::CatalystStarter::Bloated;
 
+use v5.10.1;
+
 use utf8::all;
 use warnings;
 use strict;
@@ -16,6 +18,7 @@ use Capture::Tiny qw(capture_stdout);
 use DBI;
 
 use List::Util qw/first/;
+use List::MoreUtils qw/all/;
 
 my $cat_dir;
 
@@ -245,7 +248,16 @@ sub _complete_dsn_from_pgpass {
 
     my $dsn = shift;
 
+    ## return unless there is a ~/.pgpass
+    my @pgpass = _parse_pgpass or return $dsn;
+
     my %dsn = _parse_dsn( $dsn );
+
+    ## only works with pg for obvious reasons
+    if ( $dsn{driver} ne "Pg") {
+        return $dsn;
+    }
+
 
 
 
