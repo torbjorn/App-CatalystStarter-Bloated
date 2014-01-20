@@ -3,6 +3,7 @@ package App::CatalystStarter::Bloated;
 use utf8::all;
 use warnings;
 use strict;
+use autodie;
 use Carp;
 
 use version; our $VERSION = qv('0.0.1');
@@ -217,6 +218,33 @@ sub _fix_dbi_driver_case {
         return $args[0];
     }
     return @args;
+}
+
+## pgpass functions
+sub _parse_pgpass {
+
+    open my $fh, "<", path("~/.pgpass");
+
+    my @entries;
+
+    while ( <$fh> ) {
+        chomp;
+        my @values = split /:/, $_;
+
+        my %row;
+        @row{qw/server port database user pass/} = @values;
+
+        push @entries, \%row;
+
+    }
+
+    return @entries;
+
+}
+sub _complete_dsn_from_pgpass {
+
+
+
 }
 
 # create functions
