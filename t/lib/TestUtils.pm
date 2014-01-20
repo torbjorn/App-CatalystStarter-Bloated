@@ -29,12 +29,16 @@ sub cat_name {
 sub test_argv {
     my %argv = ("--name" => cat_name(), @_);
 
+    my %supplement;
+
     while ( my($k,$v) = each %argv ) {
         if ( $k =~ /^--/ ) {
             my $k2 = substr $k, 1;
-            $argv{$k2} = $argv{$k};
+            $supplement{$k2} = $argv{$k};
         }
     }
+
+    %argv = (%argv,%supplement);
 
     return %argv;
 }

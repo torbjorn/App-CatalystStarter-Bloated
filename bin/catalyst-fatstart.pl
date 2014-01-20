@@ -149,6 +149,10 @@ Checks and corrects the dsn input
 Fixes case of known drivers, adds missing leading dbi:, tries to
 verify and correct sqlite file paths, checks that hostnames can be resolved
 
+=item -[-][no]pgpass
+
+If set, will look in ~/.pgpass to complete dbi information.
+
 =item -[-]dbuser [=] <dbuser>
 
 Username for the db connection.
