@@ -60,7 +60,15 @@ sub _run_system {
 
 sub _finalize_argv {
 
-    if ( !$ARGV{nohtml5}) {
+    if ( not $ARGV{'--nodsnfix'} ) {
+        $ARGV{'--dsnfix'} = $ARGV{'-dsnfix'} = 1
+    }
+
+    if ( not $ARGV{'--nopgpass'} ) {
+        $ARGV{'--pgpass'} = $ARGV{'-pgpass'} = 1
+    }
+
+    if ( not $ARGV{'--nohtml5'}) {
         @ARGV{qw/-html5 --html5 -h5 --h5/} = (1)x4;
     }
 
@@ -78,8 +86,11 @@ sub _finalize_argv {
     }
 
     if ($ARGV{'--dsn'}) {
-        $ARGV{'--dsn'} = _prepare_dsn( $ARGV{'--dsn'} );
-        $ARGV{'-dsn'} = $ARGV{'--dsn'};
+
+        if ( $ARGV{'--dsnfix'} ) {
+            $ARGV{'--dsn'} = _prepare_dsn( $ARGV{'--dsn'} );
+            $ARGV{'-dsn'} = $ARGV{'--dsn'};
+        }
 
         if ( not defined $ARGV{'--model'} ) {
             $ARGV{'--model'} = 1;
