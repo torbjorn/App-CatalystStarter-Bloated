@@ -10,7 +10,10 @@ use Sys::SigAction qw/timeout_call/;
 use Time::HiRes qw/gettimeofday tv_interval usleep/;
 use DBI;
 
-my $sqlite_file = "t/lib/testdir/foo.sqlite";
+use lib 't/lib';
+use TestUtils;
+
+my $sqlite_file = test_dir->child( "foo.sqlite" );
 
 my $dsn = sprintf "dbi:SQLite:dbname=%s", $sqlite_file;
 

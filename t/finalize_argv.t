@@ -91,7 +91,7 @@ use_ok "App::CatalystStarter::Bloated", ":test";
     App::CatalystStarter::Bloated::_finalize_argv();
 
     cmp_deeply( [@ARGV{qw/-model --model/}],
-                [qw/TestCatDB/x2], "model name convention" );
+                [ (cat_name."DB")x2], "model name convention" );
 
 }
 
@@ -101,7 +101,7 @@ use_ok "App::CatalystStarter::Bloated", ":test";
 
     App::CatalystStarter::Bloated::_finalize_argv();
 
-    cmp_deeply( [@ARGV{qw/-model --model/}], [qw/FooDB/x2],
+    cmp_deeply( [@ARGV{qw/-model --model/}], [ ("FooDB")x2 ],
                 "model name not changed when set" );
 
 }
@@ -112,7 +112,7 @@ use_ok "App::CatalystStarter::Bloated", ":test";
 
     App::CatalystStarter::Bloated::_finalize_argv();
 
-    cmp_deeply( [@ARGV{qw/-model --model/}], [qw/TestCatDB/x2],
+    cmp_deeply( [@ARGV{qw/-model --model/}], [ (cat_name."DB")x2 ],
                 "model name fixed when value is 1" );
 
 }
@@ -154,7 +154,7 @@ use_ok "App::CatalystStarter::Bloated", ":test";
     App::CatalystStarter::Bloated::_finalize_argv();
 
     cmp_deeply( [@ARGV{qw/-model --model/}],
-                [qw/TestCatDB/x2], "dsn set from model name" );
+                [ (cat_name."DB")x2 ], "dsn set from model name" );
 
     cmp_deeply( [@ARGV{qw/-dsn --dsn/}],
                 [qw/dbi:Pg:dbname=foo/x2], "dsn set from --model" );
@@ -173,7 +173,7 @@ use_ok "App::CatalystStarter::Bloated", ":test";
     ## also setting dsn should set --model
     cmp_deeply(
         [@ARGV{qw/-model --model/}],
-        [qw/TestCatDB/x2],
+        [ (cat_name."DB")x2 ],
         "model triggered by dsn"
     );
 
@@ -201,7 +201,7 @@ use_ok "App::CatalystStarter::Bloated", ":test";
 
     cmp_deeply(
         [@ARGV{qw/-schema --schema/}],
-        [qw/TestCat::Schema/x2],
+        [ (cat_name."::Schema")x2 ],
         "schema triggered by model"
     );
 

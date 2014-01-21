@@ -14,31 +14,49 @@ our @EXPORT = qw/clean_cat_dir
 
 my $proj_dir = Path::Tiny->cwd;
 
+my $cat_name;
+
+my $test_dir;
+
 sub proj_dir {
     return $proj_dir;
 }
 
 sub test_dir {
-    return path( proj_dir, "t/lib/testdir", @_ );
+
+    if ( not defined $test_dir ) {
+
+        $test_dir = Path::Tiny->tempdir();
+
+    }
+
+    # return path( proj_dir, "t/lib/testdir", @_ );
+    return path( $test_dir, @_ );
+
 }
 
 sub cat_name {
-    return "TestCat";
+    $cat_name //= "TestCat" . join "",
+        map { int 10 * rand() + 1 } 1..10;
+
+    my $n = $_[0] ? lc $cat_name : $cat_name;
+
+    return $n;
 }
 
 sub test_argv {
     my %argv = ("--name" => cat_name(), @_);
 
-    my %supplement;
+    my %additional;
 
     while ( my($k,$v) = each %argv ) {
         if ( $k =~ /^--/ ) {
             my $k2 = substr $k, 1;
-            $supplement{$k2} = $argv{$k};
+            $additional{$k2} = $argv{$k};
         }
     }
 
-    %argv = (%argv,%supplement);
+    %argv = (%argv,%additional);
 
     return %argv;
 }
@@ -52,8 +70,7 @@ sub clean_cat_dir {
 }
 
 END {
-    if ( test_dir->children ) {
-        warn path($0)->basename,
-            ": I did not clean up testdir after me, I am a bad script\n";
-    }
+    chdir proj_dir;
 }
+
+1;

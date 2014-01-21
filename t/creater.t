@@ -16,14 +16,14 @@ use_ok "App::CatalystStarter::Bloated", ":test";
 
 local %ARGV = test_argv;
 
-chdir "t/lib/testdir";
+chdir test_dir;
 
 clean_cat_dir;
 
 App::CatalystStarter::Bloated::_mk_app();
 
 is( App::CatalystStarter::Bloated::_creater(),
-    "TestCat/script/testcat_create.pl",
+    path( cat_name , "script", cat_name(1)."_create.pl" ),
     "create script found" );
 
 clean_cat_dir;

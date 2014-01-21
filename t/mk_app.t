@@ -17,7 +17,7 @@ my $proj_dir = Path::Tiny->cwd;
 
 clean_cat_dir;
 
-chdir 't/lib/testdir';
+chdir test_dir;
 
 stdout_is(
     sub {

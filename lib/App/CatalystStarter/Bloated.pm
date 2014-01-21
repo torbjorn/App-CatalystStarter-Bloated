@@ -85,7 +85,11 @@ sub _run_system {
     }
     else {
         l->debug("system call: @args");
-        my $o = capture_stdout { system @args };
+        if ($ARGV{CAPTURE_BOTH}) {
+        }
+        else {
+            my $o = capture_stdout { system @args };
+        }
     }
 
 }
