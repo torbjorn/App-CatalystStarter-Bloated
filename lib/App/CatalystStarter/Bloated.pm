@@ -449,8 +449,8 @@ sub _mk_model {
 
     _run_system( _creater() => "model", $model_name,
                  "DBIC::Schema", $ARGV{'--schema'},
-                 "create=dynamic",
-                 @ARGV{qw/dsn dbuser dbpass/},
+                 "create=static",
+                 @ARGV{qw/--dsn --dbuser --dbpass/},
              );
 
 }
@@ -466,6 +466,9 @@ sub run {
 
     ## 2: Create views
     _mk_views;
+
+    ## 3: Make model
+    _mk_model;
 
 }
 
