@@ -13,14 +13,13 @@ use Data::Dumper;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use App::CatalystStarter::Bloated;
-
 use Getopt::Euclid;
 
+use App::CatalystStarter::Bloated;
 App::CatalystStarter::Bloated::run;
 
 use Data::Dumper;
-print Dumper \%ARGV;
+# print Dumper \%ARGV;
 
 __END__
 
@@ -221,6 +220,11 @@ Run all tests when done
 
 =for Euclid:
     false: --notest
+
+=item -[-]debug | -d
+
+Set debug level for logging. Currently there is no other interface to
+manipulate log level.
 
 =item --version
 
