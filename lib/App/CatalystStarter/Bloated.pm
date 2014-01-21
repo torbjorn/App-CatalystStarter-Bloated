@@ -31,7 +31,7 @@ sub l{$logger}
 sub import {
 
     shift;
-    if ($_[0] eq ":test") {
+    if (defined $_[0] and $_[0] eq ":test") {
         Log::Log4perl->easy_init($FATAL);
     }
     elsif ($ARGV{'--debug'}) {
