@@ -22,7 +22,20 @@ use Sys::SigAction qw(timeout_call);
 use List::Util qw/first/;
 use List::MoreUtils qw/all/;
 
+use Log::Log4perl qw/:easy/;
+
 my $cat_dir;
+
+if ($ARGV{'--debug'}) {
+    Log::Log4perl->easy_init($DEBUG);
+}
+else {
+    Log::Log4perl->easy_init($INFO);
+}
+my $logger = get_logger;
+sub l{$logger}
+
+l->debug( "Log level set to DEBUG" );
 
 ## a helper for easy access to paths
 sub _catalyst_path {
@@ -49,6 +62,8 @@ sub _set_cat_dir {
 sub _creater {
 
     my($s) = path($cat_dir, "script")->children(qr/create\.pl/);
+    l->debug("located creater script $s" );
+
     return $s;
 
 } ## creater.t
@@ -57,9 +72,11 @@ sub _run_system {
     my @args = @_;
 
     if ( $ARGV{"--verbose"} ) {
+        l->debug("system call [verbose]: @args");
         system @args;
     }
     else {
+        l->debug("system call: @args");
         my $o = capture_stdout { system @args };
     }
 
@@ -136,20 +153,23 @@ sub _prepare_dsn {
     my $dsn = shift;
 
     ## unlikely but guess it could happen
-    $dsn =~ s/^:/dbi:/;
+    l->info("Prepended litteral 'dbi' to dsn") if $dsn =~ s/^:/dbi:/;
 
     ## if it doesn't start with dbi: by now, we'll nicely provide that
     if ( lc substr( $dsn, 0, 4 ) ne "dbi:" ) {
+        l->info("Prepended 'dbi:' to dsn");
         $dsn = "dbi:" . $dsn;
     }
 
     ## taking care of case, should there be issues
+    l->info("Setting dsn scheme to lowercase 'dbi:'" ) if $dsn =~ /^.{0,2}[DBI]/;
     $dsn =~ s/^dbi:/dbi:/i;
 
     ## if it doesn't end with a ":" but has one alerady, well append
     ## one, should be enough to make it parseable by DBI, ie dbi:Pg
     ## will do
     if ( $dsn =~ y/:// == 1 and $dsn =~ /^dbi:/ and $dsn !~ /:$/ ) {
+        l->info("Appending ':' to make dsn valid");
         $dsn .= ":";
     }
 
@@ -247,6 +267,9 @@ sub _parse_pgpass {
 
     }
 
+    l->info(sprintf "Parsed %d entries from ~/.pgpass",
+        scalar @entries );
+
     return @entries;
 
 } ## pgpass.t
@@ -314,20 +337,25 @@ sub _complete_dsn_from_pgpass {
         };
 
     if ( not @candidate_pgpass) {
+        l->info("Found no pgpass entries, not adding to dsn");
         return $dsn;
     }
     elsif ( @candidate_pgpass == 1 ) {
+        l->info("Using one matching pgpass entry to add to dsn");
         _fill_dsn_parameters_from_pgpass_data( %dsn, $candidate_pgpass[0] );
     }
-    elsif ( @candidate_pgpass < 6 and not $ARGV{'--noconnectiontest'} ) {
+    # elsif ( @candidate_pgpass < 6 and not $ARGV{'--noconnectiontest'} ) {
 
-        my @passed_candidates = grep {
+    #     ## in future we will grep for working connections
+    #     my @passed_candidates = grep {
 
-        }
+    #     }
 
-    }
+    # }
     else {
        ## too many matches, don't bother
+        l->info( sprintf "Too many (%d) matghins ~/.pgpass entries found - using none",
+             scalar @candidate_pgpass );
         return $dsn;
     }
 
@@ -346,6 +374,7 @@ sub _fill_dsn_parameters_from_pgpass_data {
 sub _mk_app {
 
     _run_system( "catalyst.pl" => $ARGV{"--name"} );
+    l->info( sprintf "Created catalyst app '%s'", $ARGV{"--name"} );
 
     _set_cat_dir( $ARGV{"--name"} );
 
@@ -355,6 +384,9 @@ sub _create_TT {
     return unless my $tt = $ARGV{"--TT"};
 
     _run_system( _creater() => "view", $tt, "TT" );
+    l->info( sprintf "Created TT view as %s::View::%s",
+         $ARGV{qw/--name --TT/}
+     );
 
 } ## create.tt
 sub _create_JSON {
@@ -362,6 +394,9 @@ sub _create_JSON {
     return unless my $json = $ARGV{"--JSON"};
 
     _run_system( _creater() => "view", $json, "JSON" );
+    l->info( sprintf "Created JSON view as %s::View::%s",
+         $ARGV{qw/--name --JSON/}
+     );
 
 } ## create_json.tt
 sub _create_model {
