@@ -146,8 +146,7 @@ sub _finalize_argv {
 
 } ## finalize_argv.t
 
-## returns hash ref with: driver, database, host, port and anything
-## else that might be there
+## dsn related
 sub _prepare_dsn {
 
     my $dsn = shift;
@@ -385,7 +384,7 @@ sub _create_TT {
 
     _run_system( _creater() => "view", $tt, "TT" );
     l->info( sprintf "Created TT view as %s::View::%s",
-         $ARGV{qw/--name --TT/}
+             @ARGV{qw/--name --TT/}
      );
 
 } ## create.tt
@@ -395,11 +394,24 @@ sub _create_JSON {
 
     _run_system( _creater() => "view", $json, "JSON" );
     l->info( sprintf "Created JSON view as %s::View::%s",
-         $ARGV{qw/--name --JSON/}
+             @ARGV{qw/--name --JSON/}
      );
 
 } ## create_json.tt
+sub _mk_views {
+
+    if ( $ARGV{'--TT'} ) {
+        _create_TT;
+    }
+
+    if ( $ARGV{'--JSON'} ) {
+        _create_JSON;
+    }
+
+}
 sub _create_model {
+
+    return unless my $model_name = $ARGV{'--model'};
 
 
 
@@ -414,7 +426,8 @@ sub run {
     ## 1: Create a catalyst
     _mk_app;
 
-
+    ## 2: Create views
+    _mk_views;
 
 }
 
