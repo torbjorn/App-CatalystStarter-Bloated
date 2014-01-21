@@ -161,6 +161,17 @@ use_ok "App::CatalystStarter::Bloated", ":test";
 
 }
 
+## check that dbuser and dbpass initializes to empty strings
+{
+    local %ARGV = test_argv;
+
+    App::CatalystStarter::Bloated::_finalize_argv();
+
+    is( $ARGV{'--dbuser'}, "", "dbuser defaults to empty string" );
+    is( $ARGV{'--dbpass'}, "", "dbuser defaults to empty string" );
+
+}
+
 ## a bad dsn that gets fixed
 {
     local %ARGV = test_argv( "--dsn" => "pg:dbname=foo" );
