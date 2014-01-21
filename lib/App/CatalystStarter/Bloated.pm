@@ -25,17 +25,25 @@ use List::MoreUtils qw/all/;
 use Log::Log4perl qw/:easy/;
 
 my $cat_dir;
-
-if ($ARGV{'--debug'}) {
-    Log::Log4perl->easy_init($DEBUG);
-}
-else {
-    Log::Log4perl->easy_init($INFO);
-}
 my $logger = get_logger;
 sub l{$logger}
 
-l->debug( "Log level set to DEBUG" );
+sub import {
+
+    shift;
+    if ($_[0] eq ":test") {
+        Log::Log4perl->easy_init($FATAL);
+    }
+    elsif ($ARGV{'--debug'}) {
+        Log::Log4perl->easy_init($DEBUG);
+    }
+    else {
+        Log::Log4perl->easy_init($INFO);
+    }
+
+    l->debug( "Log level set to DEBUG" );
+
+}
 
 ## a helper for easy access to paths
 sub _catalyst_path {
@@ -176,14 +184,16 @@ sub _prepare_dsn {
     my @parts = DBI->parse_dsn( $dsn );
     my $driver = _fix_dbi_driver_case( $parts[1] );
 
-    my $fixed_dsn = sprintf(
+    my $case_fixed_dsn = sprintf(
         "%s:%s%s:%s",
         $parts[0],
         $driver, $parts[2]||"",
         $parts[4]
     );
 
-    return $fixed_dsn;
+    # my $pgpass_fixed_dsn = _complete_dsn_from_pgpass($case_fixed_dsn);
+
+    # return $pgpass_fixed_dsn;
 
 } ## dsn.t
 sub _parse_dbi_dsn {
@@ -220,11 +230,12 @@ sub _parse_dsn {
 
     my $driver = _fix_dbi_driver_case($parsed[1]);
 
-    my %hash = (driver => $driver);
+    my %hash = (driver => $driver, scheme => $parsed[0],
+            attr_string => $parsed[2]);
 
     my %extra = _parse_dbi_dsn($parsed[4]);
 
-    @hash{qw/database host port/} = @extra{qw/database host port/};
+    %hash = (%hash, %extra);
 
     return %hash;
 
@@ -342,6 +353,8 @@ sub _complete_dsn_from_pgpass {
     elsif ( @candidate_pgpass == 1 ) {
         l->info("Using one matching pgpass entry to add to dsn");
         _fill_dsn_parameters_from_pgpass_data( %dsn, $candidate_pgpass[0] );
+        $ARGV{'--dbuser'} //= $candidate_pgpass[0]->{user};
+        $ARGV{'--dbpass'} //= $candidate_pgpass[0]->{pass};
     }
     # elsif ( @candidate_pgpass < 6 and not $ARGV{'--noconnectiontest'} ) {
 
@@ -358,6 +371,27 @@ sub _complete_dsn_from_pgpass {
         return $dsn;
     }
 
+
+
+}
+sub _dsn_hash_to_dsn_string {
+    my %dsn_hash = @_;
+
+    my %dsn_last_part = %dsn_hash;
+    my @first_parts = delete @dsn_last_part{qw/scheme driver attr_string/};
+    $_ //= "" for @first_parts;
+
+    my $last_part = "";
+    while ( my($k,$v) = each %dsn_last_part ) {
+        $last_part .= "$k=$v;";
+    }
+    $last_part =~ s/;$//;
+
+    my $fixed_dsn = sprintf(
+        "%s:%s%s:%s",
+        @first_parts,
+        $last_part
+    );
 
 }
 sub _fill_dsn_parameters_from_pgpass_data {
@@ -409,11 +443,15 @@ sub _mk_views {
     }
 
 }
-sub _create_model {
+sub _mk_model {
 
     return unless my $model_name = $ARGV{'--model'};
 
-
+    _run_system( _creater() => "model", $model_name,
+                 "DBIC::Schema", $ARGV{'--schema'},
+                 "create=dynamic",
+                 @ARGV{qw/dsn dbuser dbpass/},
+             );
 
 }
 
