@@ -97,8 +97,35 @@ cmp_deeply(
     "wrong driver case 2, plain values for db, host and port"
 );
 
-done_testing;
-
 note( "hash to string" );
 
-my $dsn_hash = parse_dsn("dbi:Pg:database=foo;host=bar;port=1234");
+local *dsn_hash_to_dsn_string = *App::CatalystStarter::Bloated::_dsn_hash_to_dsn_string;
+
+subtest "dsn hash to string" => sub {
+
+    my %test_cases = (
+        "dbi:Pg:database=foo;host=bar;port=1234" =>
+            "complete, no defaults"
+    );
+
+    plan tests => scalar keys %test_cases;
+
+    while ( my($dsn,$description) = each %test_cases ) {
+
+        ## because the order will be random, the dsn must be parsed
+        ## again to ensure its equal, or equivalent rather
+        my %dsn_hash = parse_dsn( $dsn );
+
+        my $dsn_1 = dsn_hash_to_dsn_string( %dsn_hash );
+        my %dsn_hash_there_and_back_again = parse_dsn( $dsn_1 );
+
+        cmp_deeply(
+            \%dsn_hash,
+            \%dsn_hash_there_and_back_again,
+            $description . " (" . $dsn . ")"
+        );
+    }
+
+};
+
+done_testing;
