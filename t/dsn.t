@@ -6,7 +6,7 @@ use utf8;
 use Test::Most;
 # use Test::FailWarnings;
 
-use_ok "App::CatalystStarter::Bloated";
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 note("prepare_dsn");
 ## makes it o so more convenient
@@ -69,13 +69,15 @@ local *parse_dsn = *App::CatalystStarter::Bloated::_parse_dsn;
 
 cmp_deeply(
     {parse_dsn("dbi:Pg:database=foo;host=bar;port=1234")},
-    { driver => "Pg", database => "foo", host => "bar", port => 1234 },
+    { driver => "Pg", scheme => "dbi", attr_string => undef,
+      database => "foo", host => "bar", port => 1234 },
     "Pg example, plain values for db, host and port"
 );
 
 cmp_deeply(
     {parse_dsn("dbi:mysql:db=foo;host=bar;port=1234")},
-    { driver => "mysql", database => "foo", host => "bar", port => 1234 },
+    { scheme => "dbi", driver => "mysql", attr_string => undef,
+      database => "foo", host => "bar", port => 1234 },
     "mysql example, plain values for db, host and port"
 );
 
@@ -83,14 +85,20 @@ note("fixing case");
 
 cmp_deeply(
     {parse_dsn("dbi:pg:database=foo;host=bar;port=1234")},
-    { driver => "Pg", database => "foo", host => "bar", port => 1234 },
+    { driver => "Pg", scheme => "dbi", attr_string => undef,
+      database => "foo", host => "bar", port => 1234 },
     "wrong driver case, otherwise plain values for db, host and port"
 );
 
 cmp_deeply(
     {parse_dsn("dbi:MySQL:database=foo;host=bar;port=1234")},
-    { driver => "mysql", database => "foo", host => "bar", port => 1234 },
+    { driver => "mysql", scheme => "dbi", attr_string => undef,
+      database => "foo", host => "bar", port => 1234 },
     "wrong driver case 2, plain values for db, host and port"
 );
 
 done_testing;
+
+note( "hash to string" );
+
+my $dsn_hash = parse_dsn("dbi:Pg:database=foo;host=bar;port=1234");
