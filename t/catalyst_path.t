@@ -7,7 +7,7 @@ use Test::Most;
 use Test::FailWarnings;
 use Path::Tiny;
 
-use_ok "App::CatalystStarter::Bloated";
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 use lib 't/lib';
 use TestUtils;

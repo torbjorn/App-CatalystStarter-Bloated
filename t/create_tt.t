@@ -10,7 +10,7 @@ use Test::Output;
 use lib 't/lib';
 use TestUtils;
 
-use_ok "App::CatalystStarter::Bloated";
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 clean_cat_dir;
 

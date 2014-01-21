@@ -11,7 +11,7 @@ use Path::Tiny;
 use lib 't/lib';
 use TestUtils;
 
-use_ok "App::CatalystStarter::Bloated";
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 my $proj_dir = Path::Tiny->cwd;
 

@@ -9,7 +9,7 @@ use Test::Most;
 use lib 't/lib';
 use TestUtils;
 
-use_ok( "App::CatalystStarter::Bloated" );
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 ## html5 defaults
 

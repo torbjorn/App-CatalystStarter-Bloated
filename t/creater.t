@@ -12,7 +12,7 @@ use TestUtils;
 
 clean_cat_dir;
 
-use_ok( "App::CatalystStarter::Bloated" );
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 local %ARGV = test_argv;
 
