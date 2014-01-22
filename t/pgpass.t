@@ -64,5 +64,4 @@ is( App::CatalystStarter::Bloated::_pgpass_entry_to_dsn
     "pgpass with localhost and default port #2"
 );
 
-
 done_testing;

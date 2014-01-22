@@ -198,9 +198,8 @@ sub _prepare_dsn {
         $parts[4]
     );
 
-    # my $pgpass_fixed_dsn = _complete_dsn_from_pgpass($case_fixed_dsn);
-
-    # return $pgpass_fixed_dsn;
+    my $pgpass_fixed_dsn = _complete_dsn_from_pgpass($case_fixed_dsn);
+    return $pgpass_fixed_dsn;
 
 } ## dsn.t
 sub _parse_dbi_dsn {
@@ -231,7 +230,7 @@ sub _parse_dbi_dsn {
 } ## dsn.t
 sub _parse_dsn {
 
-    my $dsn = _prepare_dsn shift ;
+    my $dsn = shift ;
 
     my @parsed = DBI->parse_dsn($dsn);
 
@@ -358,23 +357,27 @@ sub _complete_dsn_from_pgpass {
     my @candidate_pgpass =
         do {
 
-            ## adds default port so that some matches aren't lost
-            local $dsn{port} //= 5432;
-
             grep {
 
+                my $entry = $_;
+
                 all {
+
+                    # my $test = (not defined $dsn{$_} or
+                    #     ($dsn{$_}||"") eq ($entry->{$_}||""));
+
+                    # print "# $_; test is ", $test, "\n";
+
                     ## This allows flexible matching, as long as there
                     ## is one single match, it could be on anything of
                     ## host, db or port
-                    undef $dsn{$_} or
-                        $dsn{$_} eq $_->{$_}||"" ## should there be an
-                                                 ## undef from the
-                                                 ## dns, this will
-                                                 ## avoid the warning
+                    not defined $dsn{$_} or
+                        ($dsn{$_}||"") eq ($entry->{$_}||"");
+
                 } qw/host database port/;
 
             } @pgpass;
+
         };
 
     if ( not @candidate_pgpass) {
@@ -383,8 +386,9 @@ sub _complete_dsn_from_pgpass {
     }
     elsif ( @candidate_pgpass == 1 ) {
         l->info("Using one matching pgpass entry to add to dsn");
+
         _fill_dsn_parameters_from_pgpass_data
-            ( %dsn, $candidate_pgpass[0] );
+            ( \%dsn, $candidate_pgpass[0] );
 
         $ARGV{'--dbuser'} //= $candidate_pgpass[0]->{user};
         $ARGV{'--dbpass'} //= $candidate_pgpass[0]->{pass};
@@ -399,18 +403,18 @@ sub _complete_dsn_from_pgpass {
     # }
     else {
        ## too many matches, don't bother
-        l->info( sprintf "Too many (%d) matghins ~/.pgpass entries found - using none",
+        l->info( sprintf "Too many (%d) matching ~/.pgpass entries found - using none",
              scalar @candidate_pgpass );
         return $dsn;
     }
 
-
+    return _dsn_hash_to_dsn_string( %dsn );
 
 }
 sub _fill_dsn_parameters_from_pgpass_data {
 
     ## $data is a single entry as parsed from .pgpass
-    my( $dsn_hash, $data );
+    my( $dsn_hash, $data ) = @_;
 
     $dsn_hash->{$_} //= $data->{$_} for qw/host database port/;
 
