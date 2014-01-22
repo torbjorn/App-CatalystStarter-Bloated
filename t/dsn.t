@@ -99,13 +99,15 @@ cmp_deeply(
 
 note( "hash to string" );
 
-local *dsn_hash_to_dsn_string = *App::CatalystStarter::Bloated::_dsn_hash_to_dsn_string;
+local *dsn_hash_to_dsn_string =
+    *App::CatalystStarter::Bloated::_dsn_hash_to_dsn_string;
 
 subtest "dsn hash to string" => sub {
 
     my %test_cases = (
         "dbi:Pg:database=foo;host=bar;port=1234" =>
-            "complete, no defaults"
+            "complete, no defaults",
+        "dbi:Pg:db=bar" => "db only",
     );
 
     plan tests => scalar keys %test_cases;
@@ -115,9 +117,10 @@ subtest "dsn hash to string" => sub {
         ## because the order will be random, the dsn must be parsed
         ## again to ensure its equal, or equivalent rather
         my %dsn_hash = parse_dsn( $dsn );
-
         my $dsn_1 = dsn_hash_to_dsn_string( %dsn_hash );
         my %dsn_hash_there_and_back_again = parse_dsn( $dsn_1 );
+
+        note( "$dsn => $dsn_1" );
 
         cmp_deeply(
             \%dsn_hash,
