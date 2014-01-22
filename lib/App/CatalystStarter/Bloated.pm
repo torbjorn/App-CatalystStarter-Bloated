@@ -156,6 +156,9 @@ sub _finalize_argv {
         delete $ARGV{'-schema'};
     }
 
+    $ARGV{'--dbuser'} //= "";
+    $ARGV{'--dbpass'} //= "";
+
 } ## finalize_argv.t
 
 ## dsn related
@@ -259,6 +262,29 @@ sub _fix_dbi_driver_case {
     }
     return @args;
 } ## fix_dbi_driver_case.t
+sub _dsn_hash_to_dsn_string {
+    my %dsn_hash = @_;
+
+    my %dsn_last_part = %dsn_hash;
+    my @first_parts = delete @dsn_last_part{qw/scheme driver attr_string/};
+    $_ //= "" for @first_parts;
+
+    my $last_part = "";
+    while ( my($k,$v) = each %dsn_last_part ) {
+        next if not defined $v or $v eq "";
+        $last_part .= "$k=$v;";
+    }
+    $last_part =~ s/;$//;
+
+    my $fixed_dsn = sprintf(
+        "%s:%s%s:%s",
+        @first_parts,
+        $last_part
+    );
+
+    return $fixed_dsn;
+
+}
 
 ## pgpass functions
 sub _parse_pgpass {
@@ -324,7 +350,8 @@ sub _complete_dsn_from_pgpass {
     }
 
     ## if all is already set, no point to linger
-    if ( all {$_} (@dsn{qw/database port host/},@ARGV{qw/--dbuser --dbpass/})  ) {
+    if ( all {$_} (@dsn{qw/database port host/},
+                   @ARGV{qw/--dbuser --dbpass/})  ) {
         return $dsn;
     }
 
@@ -356,7 +383,9 @@ sub _complete_dsn_from_pgpass {
     }
     elsif ( @candidate_pgpass == 1 ) {
         l->info("Using one matching pgpass entry to add to dsn");
-        _fill_dsn_parameters_from_pgpass_data( %dsn, $candidate_pgpass[0] );
+        _fill_dsn_parameters_from_pgpass_data
+            ( %dsn, $candidate_pgpass[0] );
+
         $ARGV{'--dbuser'} //= $candidate_pgpass[0]->{user};
         $ARGV{'--dbpass'} //= $candidate_pgpass[0]->{pass};
     }
@@ -376,26 +405,6 @@ sub _complete_dsn_from_pgpass {
     }
 
 
-
-}
-sub _dsn_hash_to_dsn_string {
-    my %dsn_hash = @_;
-
-    my %dsn_last_part = %dsn_hash;
-    my @first_parts = delete @dsn_last_part{qw/scheme driver attr_string/};
-    $_ //= "" for @first_parts;
-
-    my $last_part = "";
-    while ( my($k,$v) = each %dsn_last_part ) {
-        $last_part .= "$k=$v;";
-    }
-    $last_part =~ s/;$//;
-
-    my $fixed_dsn = sprintf(
-        "%s:%s%s:%s",
-        @first_parts,
-        $last_part
-    );
 
 }
 sub _fill_dsn_parameters_from_pgpass_data {
@@ -450,6 +459,10 @@ sub _mk_views {
 sub _mk_model {
 
     return unless my $model_name = $ARGV{'--model'};
+
+    l->info(sprintf "Creating model; dsn=%s; model=%s; schema=%s",
+            @ARGV{qw/--dsn --model --schema/}
+        );
 
     _run_system( _creater() => "model", $model_name,
                  "DBIC::Schema", $ARGV{'--schema'},
