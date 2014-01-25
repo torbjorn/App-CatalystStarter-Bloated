@@ -13,7 +13,7 @@ use Test::File::ShareDir
 
 use_ok "App::CatalystStarter::Bloated::Initializr";
 
-note( "zip setup tests" );
+note( "zip setup and safely check tests" );
 
 is( App::CatalystStarter::Bloated::Initializr::_az(), undef, "az undef before init" );
 
@@ -33,8 +33,24 @@ lives_ok { App::CatalystStarter::Bloated::Initializr::_require_az() }
 
 note( "zip accessor tests" );
 
-throws_ok { App::CatalystStarter::Bloated::Initializr::_safely_search_one_member("foo") }
-    qr/^\QFound more than one zip member match for/,
+## search one
+
+*search_one = *App::CatalystStarter::Bloated::Initializr::_safely_search_one_member;
+
+throws_ok { search_one(qr/./) }
+    qr/^\QFound 0 or more than one zip member match for/,
     "safe search dies on > 1 matches";
+
+throws_ok { search_one(qr/THIS SHOULD NOT BE IN ANY OF THE ZIP MEMBERS/) }
+    qr/^\QFound 0 or more than one zip member match for/,
+    "a non matching qr also dies";
+
+lives_ok { search_one(qr/THIS SHOULD NOT BE IN ANY OF THE ZIP MEMBERS/, 1) }
+    "a non matching qr lives when allowed to";
+
+isa_ok( search_one( qr(^initializr/index\.html$) ), "Archive::Zip::Member",
+        "index.html" );
+
+
 
 done_testing;
