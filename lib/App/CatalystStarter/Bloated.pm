@@ -83,7 +83,7 @@ sub _run_system {
     my @args = @_;
     my @args_to_show = @args;
 
-    my ($o,$e,@r);
+    my ($o,$e,$r);
 
     ## hide db password:
     if (
@@ -101,7 +101,7 @@ sub _run_system {
     }
     else {
         l->debug("system call: @args_to_show");
-        ($o,$e,@r) = capture { system @args };
+        ($o,$e,$r) = capture { system @args };
     }
 
     ## some known sdterr lines we do not show:
@@ -112,6 +112,10 @@ sub _run_system {
         @e2 = grep !/^Schema dump completed\./, @e2;
 
         print $_,"\n" for @e2;
+    }
+
+    if ( $! or $r ) {
+        l->fatal(sprintf "system call died. It definitely shouldn't have." );
     }
 
 }
@@ -506,19 +510,26 @@ sub _mk_model {
 
     return unless my $model_name = $ARGV{'--model'};
 
-    l->info(sprintf "Creating model: dsn=%s, model=%s and schema=%s",
-            @ARGV{qw/--dsn --model --schema/}
-        );
-
     _run_system( _creater() => "model", $model_name,
                  "DBIC::Schema", $ARGV{'--schema'},
                  "create=static",
                  @ARGV{qw/--dsn --dbuser --dbpass/},
              );
 
+    l->info(sprintf "Created model: dsn=%s, model=%s and schema=%s",
+            @ARGV{qw/--dsn --model --schema/}
+        );
+
 }
 sub _mk_html5 {
     App::CatalystStarter::Bloated::Initializr::deploy(path($cat_dir,"root"));
+}
+
+## run test
+sub _test_new_cat {
+
+
+
 }
 
 ## This does it all
