@@ -13,14 +13,14 @@ use TestUtils;
 
 use_ok "App::CatalystStarter::Bloated", ":test";
 
+## makes it o so more convenient
+note("prepare_dsn");
+local *prepare_dsn = *App::CatalystStarter::Bloated::_prepare_dsn;
+
 {
 
     ## not testing .pgpass functionality here
-    local $ARGV{HOME} = Path::Tiny->tempdir;
-
-    note("prepare_dsn");
-    ## makes it o so more convenient
-    local *prepare_dsn = *App::CatalystStarter::Bloated::_prepare_dsn;
+    local $ENV{HOME} = Path::Tiny->tempdir;
 
     is( prepare_dsn( "Pg" ), "dbi:Pg:", "bare driver name" );
     is( prepare_dsn( "dbi:Pg" ), "dbi:Pg:", "lacking 2nd :" );
@@ -36,6 +36,12 @@ use_ok "App::CatalystStarter::Bloated", ":test";
     is( prepare_dsn( ":pg" ), "dbi:Pg:", "mis-case'd driver name 5" );
 
 }
+
+{
+    local %ARGV = test_argv "--nodsnfix" => 1;
+    is( prepare_dsn( "Pg" ), "Pg", "dsn left untouched with --nodsnfix" );
+}
+
 
 note( "parse_dbi_dsn" );
 local *parse_dbi_dsn = *App::CatalystStarter::Bloated::_parse_dbi_dsn;
