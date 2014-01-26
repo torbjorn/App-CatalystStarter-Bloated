@@ -562,7 +562,27 @@ This document describes App::CatalystStarter::Bloated version 0.9.0
 =head1 DESCRIPTION
 
 This distribution provides an alternative script to start catalyst
-projecst.
+projects: catalyst-fatstart.pl
+
+This script takes a number of options, see catalyst-fatstart.pl
+--usage , --man and --help
+
+In short it does the following:
+
+=over
+
+=item Calls catalyst.pl to create the catalyst project
+
+=item Sets up a TT view as ::HTML and a JSON view as ::JSON
+
+=item If given a --dsn, runs create model and provides default names
+for schema and model classes.
+
+=item If using a dbi:Pg dsn, looks in your ~/.pgpass to find usernames
+and passwords and even intelligently completes your dsn if you are
+missing hostnames and or port.
+
+=back
 
 =head1 INTERFACE
 
