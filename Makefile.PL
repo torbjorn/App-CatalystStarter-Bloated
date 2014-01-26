@@ -29,6 +29,7 @@ WriteMakefile(
         'Sys::SigAction'      => '0.21',
         'Test::Output'        => '1.02',
         'Test::File::ShareDir' => '0.3.1',
+        'Catalyst::Runtime'   => 0,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'App-CatalystStarter-Bloated-*' },
