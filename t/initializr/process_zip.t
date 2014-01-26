@@ -124,17 +124,19 @@ is( search_one( qr(^/img/), 1 ), undef, "no img/ members found in zip" );
 cmp_ok( az()->membersMatching( qr{/static/images/} ), ">=", 1,
     "several */static/images/ found in archive" );
 
-## change css and js to /static/(css|js)/
+## change css and js to /static/(css|js)/ , and also fonts
 
-note( "moves js/ and css/ members to static/*" );
+note( "moves js/, css/ and fonts/ members to static/*" );
 
 lives_ok {App::CatalystStarter::Bloated::Initializr::_move_css_js_fonts()}
-    "putting js and css under static/ lives";
+    "putting js and css and fonts under static/ lives";
 
 ## we know for sure that there should be more than just an empty dir, so '>'
 cmp_ok( az()->membersMatching( qr{/static/css/} ), ">", 1,
     "several */static/css members found in archive" );
 cmp_ok( az()->membersMatching( qr{/static/js/} ), ">", 1,
     "several */static/js members found in archive" );
+cmp_ok( az()->membersMatching( qr{/static/fonts/} ), ">", 1,
+    "several */static/fonts members found in archive" );
 
 done_testing;
