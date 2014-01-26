@@ -195,6 +195,8 @@ sub _prepare_dsn {
 
     my $dsn = shift;
 
+    return $dsn if $ARGV{'--nodsnfix'};
+
     ## unlikely but guess it could happen
     l->debug("Prepended litteral 'dbi' to dsn") if $dsn =~ s/^:/dbi:/;
 
@@ -317,6 +319,11 @@ sub _dsn_hash_to_dsn_string {
 
 ## pgpass functions
 sub _parse_pgpass {
+
+    if (not -r path("~/.pgpass")) {
+        l->debug( "~/.pgpass doesn't exist or can't be read" );
+        return;
+    }
 
     open my $fh, "<", path("~/.pgpass");
 
