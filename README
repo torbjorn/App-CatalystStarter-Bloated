@@ -8,7 +8,7 @@ In addition to that it also sets up commonly used components such as:
 * A TT view with wrapper
 * A JSON view
 * A Model with an (optionally tested working) db connection
-* Downloads a html5 starter template from http://www.initializr.com and sets it up to work with the wrapper.
+* Sets up a cached template from http://www.initializr.com as the wrapper.
 * More as the need arises.
 
 It tries to be as helpful as possible, running interactively and
@@ -33,7 +33,7 @@ Alternatively, to install with Module::Build, you can use the following commands
 
 DEPENDENCIES
 
-None.
+Several, see Makefile.PL and Build.PL
 
 
 COPYRIGHT AND LICENCE
