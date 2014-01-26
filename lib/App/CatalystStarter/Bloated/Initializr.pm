@@ -34,9 +34,18 @@ sub deploy {
     $az->extractTree( "initializr", $dir );
 
 }
-sub initialize_from_cache {
+sub _initialize_from_cache {
     _set_az_from_cache();
 }
+sub _initalize_over_http {
+
+}
+sub initialize {
+
+    _initialize_from_cache;
+
+}
+
 
 ## High level functions:
 
@@ -168,9 +177,7 @@ sub _move_css_js_fonts {
 }
 
 
-
 ## Low level functions:
-
 sub _az {
     return $az;
 }
@@ -278,7 +285,7 @@ All modifications is done in the zip file which is then written to disk.
 
 =head1 INTERFACE
 
-=head2 initialize_from_cache
+=head2 initialize
 
 Make module work with zipped cached version 4 of initializr.com
 starter template.
