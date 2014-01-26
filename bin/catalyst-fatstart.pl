@@ -16,10 +16,10 @@ use lib "$FindBin::Bin/../lib";
 use Getopt::Euclid;
 
 use App::CatalystStarter::Bloated;
-App::CatalystStarter::Bloated::run;
+# App::CatalystStarter::Bloated::run;
 
 use Data::Dumper;
-# print Dumper \%ARGV;
+print Dumper \%ARGV;
 
 __END__
 
@@ -225,10 +225,16 @@ Run all tests when done
 
 =item -[-]debug | -d
 
-Set debug level for logging. Currently there is no other interface to
-manipulate log level.
+Set debug level for logging.
 
-=item --version
+Currently there is no other interface to log level.
+
+=item -[-]v[erbose]
+
+Run more verbosely - shows stdout on all system calls made. Stderr is
+always shown.
+
+=item --version | -V
 
 Prints version
 
