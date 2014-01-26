@@ -495,6 +495,9 @@ sub _mk_model {
              );
 
 }
+sub _mk_html5 {
+    App::CatalystStarter::Bloated::Initializr::deploy(path($cat_dir,"root"));
+}
 
 ## This does it all
 sub run {
@@ -511,6 +514,8 @@ sub run {
     ## 3: Make model
     _mk_model;
 
+    ## 4: setup html template
+    _mk_html5;
 }
 
 1; # Magic true value required at end of module
