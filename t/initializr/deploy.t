@@ -14,7 +14,7 @@ use Test::File::ShareDir
 
 use_ok "App::CatalystStarter::Bloated::Initializr";
 
-lives_ok {App::CatalystStarter::Bloated::Initializr::initialize_from_cache()}
+lives_ok {App::CatalystStarter::Bloated::Initializr::_initialize_from_cache()}
     "zip fetched from cache";
 
 my $d = Path::Tiny->tempdir;
@@ -22,3 +22,5 @@ my $d = Path::Tiny->tempdir;
 App::CatalystStarter::Bloated::Initializr::deploy($d);
 
 ok( -f path($d,"wrapper.tt2"), "wrapper.tt2 found after extract" );
+
+done_testing;
