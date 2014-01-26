@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use Test::Most;
-# use Test::FailWarnings;
+use Test::FailWarnings;
 
 use Test::File::ShareDir
     -share => {
@@ -88,7 +88,7 @@ note( "HIGH LEVEL FUNCTIONS" );
 
 
 ## setup index
-note( "setup index => wrapper" );
+note( "mangle index.html into wrapper.tt2" );
 
 lives_ok {App::CatalystStarter::Bloated::Initializr::_setup_index()}
     "index process complets alive";
@@ -113,6 +113,8 @@ unlike( $w, qr{"(?:img|images)/}, "no attributes that start with img/ or images/
 
 ## check that img/ is now images/
 
+note( "moves img/ members to static/images/" );
+
 lives_ok {App::CatalystStarter::Bloated::Initializr::_move_images()}
     "changing img/ to images/ lives";
 
@@ -123,6 +125,8 @@ cmp_ok( az()->membersMatching( qr{/static/images/} ), ">=", 1,
     "several */static/images/ found in archive" );
 
 ## change css and js to /static/(css|js)/
+
+note( "moves js/ and css/ members to static/*" );
 
 lives_ok {App::CatalystStarter::Bloated::Initializr::_move_css_and_js()}
     "putting js and css under static/ lives";
