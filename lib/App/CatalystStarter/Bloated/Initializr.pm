@@ -61,6 +61,33 @@ sub _setup_index {
         $p->append( "\n[% END %]\n" );
     }
 
+    ## fix any relative links to img/ or css/ or js/ to now point to static/
+    $dom->find("*")->each(
+        sub {
+            my($element,$i) = @_;
+
+            my $attrs = $element->attr;
+
+            my %h = %$attrs;
+
+            while ( my($key,$val) = each %h ) {
+
+                if ( $val =~ m{(?:\./)?img/} ) {
+                    (my $new_val = $val) =~
+                        s{(?:\./)?img/(.*)}{[% c.uri_for("/static/images/$1") %]};
+                    $element->attr($key => $new_val);
+                }
+                elsif ( $val =~ m{(?:\./)?(css|js)/} ) {
+                    my $d = $1;
+                    (my $new_val = $val) =~
+                        s{(?:\./)?$d/(.*)}{[% c.uri_for("/static/$d/$1") %]};
+                    $element->attr($key => $new_val);
+                }
+
+            }
+
+        });
+
     ## replace it into the zip
     my $index_member = _safely_search_one_member( qr/index\.html$/ );
     my $index_name = $index_member->fileName;
@@ -69,7 +96,7 @@ sub _setup_index {
     $index_member->fileName( $d."wrapper.tt2" );
 
 }
-sub _process_images {
+sub _move_images {
 
     _require_az;
 
@@ -88,7 +115,7 @@ sub _process_images {
     }
 
 }
-sub _process_css_and_js {
+sub _move_css_and_js {
 
     _require_az;
 
