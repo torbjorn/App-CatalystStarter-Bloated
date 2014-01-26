@@ -97,7 +97,7 @@ sub _run_system {
 
     if ( $ARGV{"--verbose"} ) {
         l->debug("system call [verbose]: @args_to_show");
-        system @args;
+        $r = system @args;
     }
     else {
         l->debug("system call: @args_to_show");
@@ -114,8 +114,8 @@ sub _run_system {
         print $_,"\n" for @e2;
     }
 
-    if ( $! or $r ) {
-        l->fatal(sprintf "system call died. It definitely shouldn't have." );
+    if ( $r ) {
+        l->fatal( "system call died. It definitely shouldn't have." );
     }
 
 }
@@ -528,7 +528,21 @@ sub _mk_html5 {
 ## run test
 sub _test_new_cat {
 
+    ## Assumes cwd is at cat_dir
+    if ( _run_system "perl" => "Makefile.PL" ) {
+        l->error( "Makefile.PL failed" );
+        return;
+    }
+    elsif ( _run_system "make" ) {
+        l->error( "make failed" );
+        return;
+    }
+    elsif ( _run_system "make test" ) {
+        l->error( "make test failed" );
+        return;
+    }
 
+    l->info( "Catalyst tests ok" );
 
 }
 
@@ -549,6 +563,10 @@ sub run {
 
     ## 4: setup html template
     _mk_html5;
+
+    ## 5: test new catalyst
+    _test_new_cat;
+
 }
 
 1; # Magic true value required at end of module
