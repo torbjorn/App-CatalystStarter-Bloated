@@ -9,10 +9,23 @@ In addition to that it also sets up commonly used components such as:
 * A JSON view
 * A Model with an (optionally tested working) db connection
 * Sets up a cached template from http://www.initializr.com as the wrapper.
-* More as the need arises.
 
 It tries to be as helpful as possible, running interactively and
 offering meaningful tab completions.
+
+Future Enhancements:
+
+* Take DBIx::Class::Schema::Config into account when looking up
+  credentials
+
+* Do on the fly downloads from www.initializr.com
+
+Much of the functionality deserves its own namespace and will get
+forked off in the future. Most likely the following:
+
+* A dsn parser
+* initializr.com related
+* pgpass parsing
 
 INSTALLATION
 
