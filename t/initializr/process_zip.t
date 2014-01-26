@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use Test::Most;
-use Test::FailWarnings;
+# use Test::FailWarnings;
 
 use Test::File::ShareDir
     -share => {
@@ -88,7 +88,7 @@ note( "HIGH LEVEL FUNCTIONS" );
 
 
 ## setup index
-note( "setup index" );
+note( "setup index => wrapper" );
 
 lives_ok {App::CatalystStarter::Bloated::Initializr::_setup_index()}
     "index process complets alive";
@@ -107,9 +107,13 @@ like( $w, qr(<!DOCTYPE html>), "wrapper contains doctype html" );
 like( $w, qr([% content %]), "wrapper contains content tt var" );
 like( $w, qr([% jumbotron %]), "wrapper contains jumbotron tt var" );
 
+unlike( $w, qr{"js/}, "no attributes that start with js/ in the html" );
+unlike( $w, qr{"css/}, "no attributes that start with css/ in the html" );
+unlike( $w, qr{"(?:img|images)/}, "no attributes that start with img/ or images/ in the html" );
+
 ## check that img/ is now images/
 
-lives_ok {App::CatalystStarter::Bloated::Initializr::_process_images()}
+lives_ok {App::CatalystStarter::Bloated::Initializr::_move_images()}
     "changing img/ to images/ lives";
 
 is( search_one( qr(^/img/), 1 ), undef, "no img/ members found in zip" );
@@ -120,7 +124,7 @@ cmp_ok( az()->membersMatching( qr{/static/images/} ), ">=", 1,
 
 ## change css and js to /static/(css|js)/
 
-lives_ok {App::CatalystStarter::Bloated::Initializr::_process_css_and_js()}
+lives_ok {App::CatalystStarter::Bloated::Initializr::_move_css_and_js()}
     "putting js and css under static/ lives";
 
 ## we know for sure that there should be more than just an empty dir, so '>'
