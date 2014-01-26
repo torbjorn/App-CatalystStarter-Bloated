@@ -8,18 +8,10 @@ use autodie;
 use warnings;
 use Carp qw< carp croak confess cluck >;
 
-use Data::Dumper;
-
-use FindBin;
-use lib "$FindBin::Bin/../lib";
-
 use Getopt::Euclid;
 
 use App::CatalystStarter::Bloated;
-# App::CatalystStarter::Bloated::run;
-
-use Data::Dumper;
-print Dumper \%ARGV;
+App::CatalystStarter::Bloated::run;
 
 __END__
 
