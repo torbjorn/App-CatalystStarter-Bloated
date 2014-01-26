@@ -23,6 +23,8 @@ use Data::Dumper;
 
 __END__
 
+=encoding utf8
+
 =head1 NAME
 
 catalyst-fatstart.pl - catalyst starter that tries to know better than

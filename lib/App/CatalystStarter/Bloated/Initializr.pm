@@ -278,6 +278,15 @@ All modifications is done in the zip file which is then written to disk.
 
 =head1 INTERFACE
 
+=head2 initialize_from_cache
+
+Make module work with zipped cached version 4 of initializr.com
+starter template.
+
+=head2 deploy($directory)
+
+Processes zip and extracts it at given dir.
+
 =head1 DIAGNOSTICS
 
 =for author to fill in:
