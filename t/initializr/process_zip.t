@@ -128,7 +128,7 @@ cmp_ok( az()->membersMatching( qr{/static/images/} ), ">=", 1,
 
 note( "moves js/ and css/ members to static/*" );
 
-lives_ok {App::CatalystStarter::Bloated::Initializr::_move_css_and_js()}
+lives_ok {App::CatalystStarter::Bloated::Initializr::_move_css_js_fonts()}
     "putting js and css under static/ lives";
 
 ## we know for sure that there should be more than just an empty dir, so '>'

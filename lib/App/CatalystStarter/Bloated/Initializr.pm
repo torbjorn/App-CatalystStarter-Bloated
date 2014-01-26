@@ -129,13 +129,13 @@ sub _move_images {
     }
 
 }
-sub _move_css_and_js {
+sub _move_css_js_fonts {
 
     _require_az;
 
     ## change dir name from img/* to static/images/*
 
-    my @static_members = $az->membersMatching(qr(/(?:css|js)/));
+    my @static_members = $az->membersMatching(qr(/(?:css|js|fonts)/));
 
     if (not @static_members) {
         carp "did not find any js/ or css/ files in zip, that cannot be right";
@@ -143,13 +143,11 @@ sub _move_css_and_js {
     }
 
     for my $m (@static_members) {
-        (my $new_name = $m->fileName) =~ s{/(css|js)/}{/static/$1/};
+        (my $new_name = $m->fileName) =~ s{/(css|js|fonts)/}{/static/$1/};
         $m->fileName( $new_name );
     }
 
 }
-
-
 
 ## Low level functions:
 
