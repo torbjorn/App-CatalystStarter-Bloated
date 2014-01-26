@@ -55,7 +55,7 @@ sub _setup_index {
         my $p = $div->parent;
 
         $p->prepend( "\n[% IF jumbotron %]" .
-                         "[% # put a <h1> and some <p>'s in here %]\n    "
+                         "[% # put a <h1> and one or more <p> in here %]\n    "
                      );
         $div->replace_content( "[% jumbotron %]" );
         $p->append( "\n[% END %]\n" );
@@ -66,38 +66,46 @@ sub _setup_index {
         sub {
             my($element,$i) = @_;
 
-            my $attrs = $element->attr;
-
-            my %h = %$attrs;
+            my %h = %$element;
 
             while ( my($key,$val) = each %h ) {
 
-                print "# '$key'='$val' ";
+                # print "# '$key'='$val' ";
 
                 if ( $val =~ m{(?:\./)?img/} ) {
                     (my $new_val = $val) =~
-                        s{(?:\./)?img/(.*)}{[% c.uri_for("/static/images/$1") %]};
+                        s{(?:\./)?img/(.*)}{[% c.uri_for(QUOTEHERE/static/images/$1QUOTEHERE) %]};
                     $element->attr($key => $new_val);
-                    print "=> '$new_val'";
+                    # print "=> '$new_val'";
                 }
                 elsif ( $val =~ m{(?:\./)?(css|js)/} ) {
                     my $d = $1;
                     (my $new_val = $val) =~
-                        s{(?:\./)?$d/(.*)}{[% c.uri_for("/static/$d/$1") %]};
+                        s{(?:\./)?$d/(.*)}{[% c.uri_for(QUOTEHERE/static/$d/$1QUOTEHERE) %]};
                     $element->attr($key => $new_val);
-                    print "=> '$new_val'";
+                    # print "=> '$new_val'";
                 }
 
-                print "\n";
+                # print "\n";
 
             }
 
         });
 
+    # print "$dom";
+
+    (my $new_index_content = "$dom") =~ s/QUOTEHERE/"/g;
+
+    ## this won't be handled because it's not an html element
+    ## attribute, and we're not parsing javascript (yet?)
+    $new_index_content =~ s{\Qdocument.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')}
+                           {document.write('<script src="[% c.uri_for("/static/js/vendor/jquery-1.10.1.min.js") %]"><\/script>')};
+
     ## replace it into the zip
     my $index_member = _safely_search_one_member( qr/index\.html$/ );
     my $index_name = $index_member->fileName;
     my($f,$d) = fileparse( $index_name );
+    $az->contents( $index_member, $new_index_content );
 
     $index_member->fileName( $d."wrapper.tt2" );
 
