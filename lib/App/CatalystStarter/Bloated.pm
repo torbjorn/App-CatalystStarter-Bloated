@@ -522,11 +522,18 @@ sub _mk_model {
 
 }
 sub _mk_html5 {
+
+    if ( $ARGV{'--nohtml5'} or $ARGV{'--noh5'}) {
+        return
+    }
+
     App::CatalystStarter::Bloated::Initializr::deploy(path($cat_dir,"root"));
 }
 
 ## run test
 sub _test_new_cat {
+
+    chdir $cat_dir;
 
     ## Assumes cwd is at cat_dir
     if ( _run_system "perl" => "Makefile.PL" ) {
@@ -543,6 +550,8 @@ sub _test_new_cat {
     }
 
     l->info( "Catalyst tests ok" );
+
+    chdir "..";
 
 }
 
