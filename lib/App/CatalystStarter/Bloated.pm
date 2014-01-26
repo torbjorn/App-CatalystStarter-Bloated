@@ -110,6 +110,10 @@ sub _run_system {
         my @e2 = @e;
         @e2 = grep !/^Dumping manual schema for/, @e2;
         @e2 = grep !/^Schema dump completed\./, @e2;
+        @e2 = grep !m{^Cannot determine perl version info from lib/.*\.pm}, @e2;
+
+        ## hide all if we're testing non-verbosely
+        @e2 = () if "@args" eq "make test" and not $ARGV{'--verbose'};
 
         print $_,"\n" for @e2;
     }
@@ -544,7 +548,7 @@ sub _test_new_cat {
         l->error( "make failed" );
         return;
     }
-    elsif ( _run_system "make test" ) {
+    elsif ( _run_system "make" => "test" ) {
         l->error( "make test failed" );
         return;
     }
@@ -575,6 +579,8 @@ sub run {
 
     ## 5: test new catalyst
     _test_new_cat;
+
+    l->info( "Catalyst setup done" );
 
 }
 
