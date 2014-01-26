@@ -20,6 +20,24 @@ sub _require_az {
     confess "az object not initialized" unless defined $az and $az->isa("Archive::Zip");
 }
 
+## Top level functions
+sub deploy {
+
+    _require_az;
+
+    my $dir = shift;
+
+    _setup_index();
+    _move_images();
+    _move_css_js_fonts();
+
+    $az->extractTree( "initializr", $dir );
+
+}
+sub initialize_from_cache {
+    _set_az_from_cache();
+}
+
 ## High level functions:
 
 
@@ -148,6 +166,8 @@ sub _move_css_js_fonts {
     }
 
 }
+
+
 
 ## Low level functions:
 
