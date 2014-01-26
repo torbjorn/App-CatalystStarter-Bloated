@@ -15,6 +15,10 @@ use IO::All;
 use File::Basename;
 
 my $az;
+## nice to have this in top
+sub _require_az {
+    confess "az object not initialized" unless defined $az and $az->isa("Archive::Zip");
+}
 
 ## High level functions:
 
@@ -65,14 +69,46 @@ sub _setup_index {
     $index_member->fileName( $d."wrapper.tt2" );
 
 }
-
 sub _process_images {
 
     _require_az;
 
+    ## change dir name from img/* to static/images/*
 
+    my @img_members = $az->membersMatching(qr(/img/));
+
+    if (not @img_members) {
+        carp "did not find any img/ files in zip, this does not feel right";
+        return;
+    }
+
+    for my $m (@img_members) {
+        (my $new_name = $m->fileName) =~ s|/img/|/static/images/|;
+        $m->fileName( $new_name );
+    }
 
 }
+sub _process_css_and_js {
+
+    _require_az;
+
+    ## change dir name from img/* to static/images/*
+
+    my @static_members = $az->membersMatching(qr(/(?:css|js)/));
+
+    if (not @static_members) {
+        carp "did not find any js/ or css/ files in zip, that cannot be right";
+        return;
+    }
+
+    for my $m (@static_members) {
+        (my $new_name = $m->fileName) =~ s{/(css|js)/}{/static/$1/};
+        $m->fileName( $new_name );
+    }
+
+}
+
+
 
 ## Low level functions:
 
@@ -84,9 +120,6 @@ sub _set_az_from_cache {
     my $zip_file = module_file( __PACKAGE__, "initializr-verekia-4.0.zip" );
     return $az //= Archive::Zip->new( $zip_file );
 
-}
-sub _require_az {
-    confess "az object not initialized" unless defined $az and $az->isa("Archive::Zip");
 }
 sub _safely_search_one_member {
 
