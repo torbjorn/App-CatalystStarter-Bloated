@@ -12,6 +12,7 @@ use File::Path;
 use HTML::TreeBuilder;
 use Mojo::DOM;
 use IO::All;
+use File::Basename;
 
 my $az;
 
@@ -25,6 +26,8 @@ my $az;
 ## 3) fix any local links to img, css or js, should point to:
 ## 4) /static/images, css and js
 sub _setup_index {
+
+    _require_az;
 
     my $dom = _index_dom();
 
@@ -47,15 +50,29 @@ sub _setup_index {
 
         my $p = $div->parent;
 
-        $p->prepend( "\n[% IF jumbotron %]\n    " );
+        $p->prepend( "\n[% IF jumbotron %]" .
+                         "[% # put a <h1> and some <p>'s in here %]\n    "
+                     );
         $div->replace_content( "[% jumbotron %]" );
         $p->append( "\n[% END %]\n" );
     }
 
-    "$dom" > io "foo.html";
+    ## replace it into the zip
+    my $index_member = _safely_search_one_member( qr/index\.html$/ );
+    my $index_name = $index_member->fileName;
+    my($f,$d) = fileparse( $index_name );
+
+    $index_member->fileName( $d."wrapper.tt2" );
 
 }
 
+sub _process_images {
+
+    _require_az;
+
+
+
+}
 
 ## Low level functions:
 
@@ -77,7 +94,14 @@ sub _safely_search_one_member {
 
     _require_az;
 
-    my @m = $az->membersMatching({ regex => $qr });
+    my @m;
+
+    if ( ref $qr eq "Regexp" ) {
+        @m = $az->membersMatching({ regex => $qr });
+    }
+    else {
+        @m = ($az->memberNamed( $qr ));
+    }
 
     if ( @m != 1 and not $allowed_to_live_when_doesnt_match or @m > 1 ) {
         croak "Found 0 or more than one zip member match for '$qr'";
@@ -90,6 +114,8 @@ sub _zip_content {
 
     my( $qr, $new_content ) = @_;
 
+    _require_az;
+
     my $member = _safely_search_one_member($qr) or return;
 
     if ( $new_content ) {
@@ -100,18 +126,11 @@ sub _zip_content {
     }
 }
 sub _index_dom {
-    # my $dom = HTML::TreeBuilder->new
-    #     (
-    #         no_space_compacting => 1,
-    #         store_comments => 1,
-    #         # ignore_ignorable_whitespace => 0,
-    #         # ignore_text => 0,
-    #     );
+
+    _require_az;
 
     my $h = _zip_content( qr/index\.html$/ );
     my $dom = Mojo::DOM->new( $h );
-
-    # $dom->parse_content( _zip_content( qr/index\.html$/ ) );
 
     return $dom;
 

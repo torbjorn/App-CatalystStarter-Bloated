@@ -96,6 +96,7 @@ sub _run_system {
 
 sub _finalize_argv {
 
+    ## some booleans default on
     if ( not $ARGV{'--nodsnfix'} ) {
         $ARGV{'--dsnfix'} = $ARGV{'-dsnfix'} = 1
     }
@@ -107,7 +108,9 @@ sub _finalize_argv {
     if ( not $ARGV{'--nohtml5'}) {
         @ARGV{qw/-html5 --html5 -h5 --h5/} = (1)x4;
     }
+    ## defaults done
 
+    ## views triggers json and tt
     if ( $ARGV{'--views'} ) {
         my %map;
         @map{qw/-TT --TT -JSON --JSON/} = qw/HTML HTML JSON JSON/;
@@ -116,11 +119,13 @@ sub _finalize_argv {
         }
     }
 
+    ## model can have the dsn
     if (defined $ARGV{'--model'} and $ARGV{'--model'} =~ /^dbi:/i ) {
         $ARGV{'--dsn'} = $ARGV{'--model'};
         $ARGV{'--model'} = 1;
     }
 
+    ## dsn gets a brush up
     if ($ARGV{'--dsn'}) {
 
         if ( $ARGV{'--dsnfix'} ) {
@@ -134,6 +139,7 @@ sub _finalize_argv {
 
     }
 
+    ## model might have defaults
     if ( $ARGV{'--model'} ) {
 
         if ( $ARGV{'--model'} eq '1' ) {
@@ -176,10 +182,11 @@ sub _prepare_dsn {
     }
 
     ## taking care of case, should there be issues
-    l->info("Setting dsn scheme to lowercase 'dbi:'" ) if $dsn =~ /^.{0,2}[DBI]/;
+    l->info("Setting dsn scheme to lowercase 'dbi:'" )
+        if $dsn =~ /^.{0,2}[DBI]/;
     $dsn =~ s/^dbi:/dbi:/i;
 
-    ## if it doesn't end with a ":" but has one alerady, well append
+    ## if it doesn't end with a ":" but has one alerady, we'll append
     ## one, should be enough to make it parseable by DBI, ie dbi:Pg
     ## will do
     if ( $dsn =~ y/:// == 1 and $dsn =~ /^dbi:/ and $dsn !~ /:$/ ) {
@@ -419,6 +426,8 @@ sub _fill_dsn_parameters_from_pgpass_data {
     $dsn_hash->{$_} //= $data->{$_} for qw/host database port/;
 
 }
+
+
 
 # create functions
 sub _mk_app {
