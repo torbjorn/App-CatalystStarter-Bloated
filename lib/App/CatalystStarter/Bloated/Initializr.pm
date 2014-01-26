@@ -72,17 +72,23 @@ sub _setup_index {
 
             while ( my($key,$val) = each %h ) {
 
+                print "# '$key'='$val' ";
+
                 if ( $val =~ m{(?:\./)?img/} ) {
                     (my $new_val = $val) =~
                         s{(?:\./)?img/(.*)}{[% c.uri_for("/static/images/$1") %]};
                     $element->attr($key => $new_val);
+                    print "=> '$new_val'";
                 }
                 elsif ( $val =~ m{(?:\./)?(css|js)/} ) {
                     my $d = $1;
                     (my $new_val = $val) =~
                         s{(?:\./)?$d/(.*)}{[% c.uri_for("/static/$d/$1") %]};
                     $element->attr($key => $new_val);
+                    print "=> '$new_val'";
                 }
+
+                print "\n";
 
             }
 
