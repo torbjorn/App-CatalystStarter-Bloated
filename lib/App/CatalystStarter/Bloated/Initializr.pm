@@ -15,13 +15,22 @@ use IO::All;
 use File::Basename;
 
 my $az;
+my $logger;
 ## nice to have this in top
+sub l{
+    $logger
+}
 sub _require_az {
     confess "az object not initialized" unless defined $az and $az->isa("Archive::Zip");
+}
+sub _set_logger {
+    $logger = shift;
 }
 
 ## Top level functions
 sub deploy {
+
+    _initialize();
 
     _require_az;
 
@@ -32,20 +41,20 @@ sub deploy {
     _move_css_js_fonts();
 
     $az->extractTree( "initializr", $dir );
+    l->info( "HTML5: template unzipped to root/" );
 
 }
 sub _initialize_from_cache {
+    l->debug("Getting template from cache");
     _set_az_from_cache();
 }
 sub _initalize_over_http {
-
+    l->debug("Getting template from initializr.com" );
 }
-sub initialize {
-
+sub _initialize {
     _initialize_from_cache;
-
+    l->debug("HTML5: Template loaded");
 }
-
 
 ## High level functions:
 
@@ -69,6 +78,7 @@ sub _setup_index {
             croak "container tag not found in html template - cannot continue";
         }
         $div->replace_content( "[% content %]" );
+        l->debug( "HTML5: Wrapper content template var inserted" );
     }
 
     ## insert jumbotron, might aswell since the template has it
@@ -86,6 +96,7 @@ sub _setup_index {
                      );
         $div->replace_content( "[% jumbotron %]" );
         $p->append( "\n[% END %]\n" );
+        l->debug( "HTML5: Wrapper jumbotron template var inserted" );
     }
 
     ## fix any relative links to img/ or css/ or js/ to now point to static/
@@ -118,6 +129,7 @@ sub _setup_index {
             }
 
         });
+    l->debug("HTML5: references to img/ css/ js/ and fonts/ changed to static/*");
 
     # print "$dom";
 
@@ -135,6 +147,7 @@ sub _setup_index {
     $az->contents( $index_member, $new_index_content );
 
     $index_member->fileName( $d."wrapper.tt2" );
+    l->debug("HTML5: index.html changed to wrapper.tt2" );
 
 }
 sub _move_images {
@@ -155,6 +168,9 @@ sub _move_images {
         $m->fileName( $new_name );
     }
 
+    l->debug(sprintf "HTML5: %d image(s) moved from img/ to images/",
+         scalar(@img_members) );
+
 }
 sub _move_css_js_fonts {
 
@@ -174,8 +190,10 @@ sub _move_css_js_fonts {
         $m->fileName( $new_name );
     }
 
-}
+    l->debug(sprintf "HTML5: %d css, js or fonts files moved to static/*",
+         scalar(@static_members) );
 
+}
 
 ## Low level functions:
 sub _az {
@@ -284,11 +302,6 @@ Ie choosing what content to include
 All modifications is done in the zip file which is then written to disk.
 
 =head1 INTERFACE
-
-=head2 initialize
-
-Make module work with zipped cached version 4 of initializr.com
-starter template.
 
 =head2 deploy($directory)
 
