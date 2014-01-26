@@ -180,42 +180,6 @@ Db for the db connection.
 Causes it to look through $HOME/.pgpass for credentials for postgresql
 connections.
 
-=item -[-][non]i[nteractive]
-
-Runs interactively. Prompts user for important options that are not
-yet answered on command line:
-
-=over
-
-=item *
-
-views, it will prompt you for both TT and JSON.
-
-=item *
-
-html5
-
-=item *
-
-model, and if need be, dbuser and dbpass
-
-=back
-
-=for Euclid:
-    false: --noninteractive
-
-=item -[-][no]con[[nection]test]
-
-Test db connection after and during setup. This is also used to help
-select pgpass entry if there are conflicting entries.
-
-=item --[connection-]timeout [=] <timeout>
-
-Timeout for connection attempts, defaults to 200ms.
-
-=for Euclid:
-   timeout.default = 200
-
 =item -[-][no]test
 
 Run all tests when done
@@ -229,7 +193,7 @@ Set debug level for logging.
 
 Currently there is no other interface to log level.
 
-=item -[-]v[erbose]
+=item --verbose
 
 Run more verbosely - shows stdout on all system calls made. Stderr is
 always shown.
