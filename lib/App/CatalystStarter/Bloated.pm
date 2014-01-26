@@ -580,7 +580,10 @@ for schema and model classes.
 
 =item If using a dbi:Pg dsn, looks in your ~/.pgpass to find usernames
 and passwords and even intelligently completes your dsn if you are
-missing hostnames and or port.
+missing hostname and or port.
+
+=item Sets up a TT wrapper based on a HTML5 template intializr.com and
+points css, js images and fonts to /static
 
 =back
 
