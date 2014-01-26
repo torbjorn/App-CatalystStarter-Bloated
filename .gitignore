@@ -15,3 +15,4 @@ pod2htm*.tmp
 App-CatalystStarter-Bloated-*
 .#*
 *#
+initializr/
