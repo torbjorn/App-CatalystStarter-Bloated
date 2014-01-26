@@ -10,6 +10,11 @@ use Carp qw< carp croak confess cluck >;
 
 use Getopt::Euclid;
 
+use Test::File::ShareDir
+    -share => {
+        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
+    };
+
 use App::CatalystStarter::Bloated;
 App::CatalystStarter::Bloated::run;
 
@@ -33,6 +38,7 @@ catalyst-fatstart.pl -n MyCatApp
 
 # the same, but adds a
 
+
 =head1 DESCRIPTION
 
 This script starts a new catalyst project. It uses catalyst.pl that
@@ -48,10 +54,21 @@ doing both TT and JSON.
 =item Adds a JSON view, see --JSON
 
 =item Adds a model with a schema. If not spesified, they get default
-names.
+names. Note:
 
-=back Adds a HTML5 template. Currently from initializr.com with a
-reasonable selection including jquery and bootstrap.
+=over
+
+=item Only ever does DBIC::Schema models. Do not use this is you use
+other types of models.
+
+=item Always uses create=static to create schema files. Do not create
+a model with this tool if you don't mean to create schema files.
+
+=back
+
+=item Adds a HTML5 template. Currently from initializr.com with a reasonable selection including jquery and bootstrap.
+
+=back
 
 =head1 USAGE
 
