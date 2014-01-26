@@ -603,9 +603,7 @@ App::CatalystStarter::Bloated requires no configuration files or environment var
 
 =head1 DEPENDENCIES
 
-
-None.
-
+Several. Makefile/Build should take care of them.
 
 =head1 INCOMPATIBILITIES
 

@@ -28,8 +28,30 @@ This app and its module is currently at a puny version 0.0.1
 
 =head1 SYNOPSIS
 
-    # dont use this module, use the installed script
-    # catalyst-fatstart.pl instead
+# just like catalyst.pl MyCatApp
+catalyst-fatstart.pl -n MyCatApp
+
+# the same, but adds a
+
+=head1 DESCRIPTION
+
+This script starts a new catalyst project. It uses catalyst.pl that
+comes with Catalyst::Runtime to do the dirty work.
+
+Furthermore it optionally does zero or more of the following:
+
+=over
+
+=item Adds a TT view, see --TT. Also see --views which is short for
+doing both TT and JSON.
+
+=item Adds a JSON view, see --JSON
+
+=item Adds a model with a schema. If not spesified, they get default
+names.
+
+=back Adds a HTML5 template. Currently from initializr.com with a
+reasonable selection including jquery and bootstrap.
 
 =head1 USAGE
 
