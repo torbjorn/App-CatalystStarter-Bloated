@@ -92,6 +92,7 @@ lives_ok {App::CatalystStarter::Bloated::Initializr::_setup_index()}
     "index process complets alive";
 
 ## check that index.html doesn't exist
+## (should be renamed to wrapper.tt2 by now)
 is( search_one( qr/index\.html$/, 1), undef, "index.html not in archive" );
 
 ok( search_one( qr/wrapper\.tt2$/ ), "wrapper.tt2 *is* in archive" );
@@ -104,6 +105,9 @@ like( $w, qr(<!DOCTYPE html>), "wrapper contains doctype html" );
 like( $w, qr([% content %]), "wrapper contains content tt var" );
 like( $w, qr([% jumbotron %]), "wrapper contains jumbotron tt var" );
 
+## check that img/ is now images/
 
+App::CatalystStarter::Bloated::Initializr::_process_images();
+is( search_one( qr(^/img/), 1 ), undef, "no img/ members found in zip" );
 
 done_testing;
