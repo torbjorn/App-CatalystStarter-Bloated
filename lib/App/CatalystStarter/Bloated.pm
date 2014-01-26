@@ -28,6 +28,7 @@ use App::CatalystStarter::Bloated::Initializr;
 
 my $cat_dir;
 my $logger = get_logger;
+App::CatalystStarter::Bloated::Initializr::_set_logger($logger);
 sub l{$logger}
 
 sub import {
@@ -80,15 +81,24 @@ sub _creater {
 sub _run_system {
 
     my @args = @_;
+    my @args_to_show = @args;
 
     my ($o,$e,@r);
 
+    ## hide db password:
+    if (
+        $args_to_show[0] =~ /_create\.pl$/ and
+        $args_to_show[1] eq "model"
+    ) {
+        $args_to_show[8] = "<secret>" if defined $args_to_show[8];
+    }
+
     if ( $ARGV{"--verbose"} ) {
-        l->debug("system call [verbose]: @args");
+        l->debug("system call [verbose]: @args_to_show");
         system @args;
     }
     else {
-        l->debug("system call: @args");
+        l->debug("system call: @args_to_show");
         ($o,$e,@r) = capture { system @args };
     }
 
@@ -186,11 +196,11 @@ sub _prepare_dsn {
     my $dsn = shift;
 
     ## unlikely but guess it could happen
-    l->info("Prepended litteral 'dbi' to dsn") if $dsn =~ s/^:/dbi:/;
+    l->debug("Prepended litteral 'dbi' to dsn") if $dsn =~ s/^:/dbi:/;
 
     ## if it doesn't start with dbi: by now, we'll nicely provide that
     if ( lc substr( $dsn, 0, 4 ) ne "dbi:" ) {
-        l->info("Prepended 'dbi:' to dsn");
+        l->debug("Prepended 'dbi:' to dsn");
         $dsn = "dbi:" . $dsn;
     }
 
@@ -326,7 +336,7 @@ sub _parse_pgpass {
 
     }
 
-    l->info(sprintf "Parsed %d entries from ~/.pgpass",
+    l->debug(sprintf "Parsed %d entries from ~/.pgpass",
         scalar @entries );
 
     return @entries;
@@ -484,7 +494,7 @@ sub _mk_model {
 
     return unless my $model_name = $ARGV{'--model'};
 
-    l->info(sprintf "Creating model; dsn=%s; model=%s; schema=%s",
+    l->info(sprintf "Creating model: dsn=%s, model=%s and schema=%s",
             @ARGV{qw/--dsn --model --schema/}
         );
 
