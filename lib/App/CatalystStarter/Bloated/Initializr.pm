@@ -13,9 +13,10 @@ use HTML::TreeBuilder;
 use Mojo::DOM;
 use IO::All;
 use File::Basename;
+use Log::Log4perl qw/:easy/;
 
 my $az;
-my $logger;
+my $logger = get_logger;
 ## nice to have this in top
 sub l{
     $logger

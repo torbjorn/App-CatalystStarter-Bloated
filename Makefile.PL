@@ -1,3 +1,4 @@
+use utf8;
 use strict;
 use warnings;
 use ExtUtils::MakeMaker;
@@ -18,7 +19,18 @@ WriteMakefile(
         'Test::Pod'           => '1.48',
         'Test::Pod::Coverage' => '1.08',
         'utf8::all'           => '0.011',
+        'Archive::Zip'        => '1.30',
+        'Capture::Tiny'       => '0.23',
+        'DBI'                 => '1.63',
+        'File::ShareDir'      => '1.03',
+        'HTML::TreeBuilder'   => '5.03',
+        'List::MoreUtils'     => '0.33',
+        'Log::Log4perl'       => '1.42',
+        'Sys::SigAction'      => '0.21',
+        'Test::Output'        => '1.02',
+        'Test::File::ShareDir' => '0.3.1',
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'App-CatalystStarter-Bloated-*' },
+    EXE_FILES           => [qw{bin/catalyst-fatstart.pl}],
 );
