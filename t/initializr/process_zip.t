@@ -13,11 +13,13 @@ use Test::File::ShareDir
 
 use_ok "App::CatalystStarter::Bloated::Initializr";
 
+*az = *App::CatalystStarter::Bloated::Initializr::_az;
+
 ## some basic functions for control and setup
 
 note( "zip setup and safely check tests" );
 
-is( App::CatalystStarter::Bloated::Initializr::_az(), undef, "az undef before init" );
+is( az(), undef, "az undef before init" );
 
 throws_ok { App::CatalystStarter::Bloated::Initializr::_require_az() }
     qr/^\Qaz object not initialized/, "az check dies as expected before init";
@@ -27,7 +29,7 @@ isa_ok(
     "Archive::Zip"
 );
 
-isa_ok( App::CatalystStarter::Bloated::Initializr::_az(), "Archive::Zip",
+isa_ok( az(), "Archive::Zip",
         "az after init" );
 
 lives_ok { App::CatalystStarter::Bloated::Initializr::_require_az() }
@@ -107,7 +109,24 @@ like( $w, qr([% jumbotron %]), "wrapper contains jumbotron tt var" );
 
 ## check that img/ is now images/
 
-App::CatalystStarter::Bloated::Initializr::_process_images();
+lives_ok {App::CatalystStarter::Bloated::Initializr::_process_images()}
+    "changing img/ to images/ lives";
+
 is( search_one( qr(^/img/), 1 ), undef, "no img/ members found in zip" );
+
+## might be just an empty dir, so ">="
+cmp_ok( az()->membersMatching( qr{/static/images/} ), ">=", 1,
+    "several */static/images/ found in archive" );
+
+## change css and js to /static/(css|js)/
+
+lives_ok {App::CatalystStarter::Bloated::Initializr::_process_css_and_js()}
+    "putting js and css under static/ lives";
+
+## we know for sure that there should be more than just an empty dir, so '>'
+cmp_ok( az()->membersMatching( qr{/static/css/} ), ">", 1,
+    "several */static/css members found in archive" );
+cmp_ok( az()->membersMatching( qr{/static/js/} ), ">", 1,
+    "several */static/js members found in archive" );
 
 done_testing;
