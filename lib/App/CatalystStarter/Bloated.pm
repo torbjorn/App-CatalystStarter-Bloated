@@ -14,7 +14,7 @@ use IO::Prompter;
 use File::Which qw(which);
 use File::Glob q(:bsd_glob);
 use Path::Tiny qw(path cwd);
-use Capture::Tiny qw(capture_stdout);
+use Capture::Tiny qw(capture_stdout capture);
 use DBI;
 use Time::HiRes qw/ualarm/;
 use Sys::SigAction qw(timeout_call);
@@ -23,6 +23,8 @@ use List::Util qw/first/;
 use List::MoreUtils qw/all/;
 
 use Log::Log4perl qw/:easy/;
+
+use App::CatalystStarter::Bloated::Initializr;
 
 my $cat_dir;
 my $logger = get_logger;
@@ -79,22 +81,29 @@ sub _run_system {
 
     my @args = @_;
 
+    my ($o,$e,@r);
+
     if ( $ARGV{"--verbose"} ) {
         l->debug("system call [verbose]: @args");
         system @args;
     }
     else {
         l->debug("system call: @args");
-        if ($ARGV{CAPTURE_BOTH}) {
-        }
-        else {
-            my $o = capture_stdout { system @args };
-        }
+        ($o,$e,@r) = capture { system @args };
     }
 
-}
+    ## some known sdterr lines we do not show:
+    my @e = split /\n/, $e;
+    my @e2 = @e;
+    @e2 = grep !/^Dumping manual schema for/, @e2;
+    @e2 = grep !/^Schema dump completed\./, @e2;
 
+    print $_,"\n" for @e2;
+
+}
 sub _finalize_argv {
+
+    my $dsn_0 = $ARGV{'--dsn'};
 
     ## some booleans default on
     if ( not $ARGV{'--nodsnfix'} ) {
@@ -164,6 +173,10 @@ sub _finalize_argv {
 
     $ARGV{'--dbuser'} //= "";
     $ARGV{'--dbpass'} //= "";
+
+    if ( $dsn_0 ne $ARGV{'--dsn'} ) {
+        l->debug( "dsn changed to '$ARGV{'--dsn'}'" );
+    }
 
 } ## finalize_argv.t
 
@@ -426,8 +439,6 @@ sub _fill_dsn_parameters_from_pgpass_data {
     $dsn_hash->{$_} //= $data->{$_} for qw/host database port/;
 
 }
-
-
 
 # create functions
 sub _mk_app {
