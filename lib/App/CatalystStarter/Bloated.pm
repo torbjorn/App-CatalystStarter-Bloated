@@ -8,7 +8,7 @@ use strict;
 use autodie;
 use Carp;
 
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv('0.9.0');
 
 use IO::Prompter;
 use File::Which qw(which);
@@ -90,7 +90,9 @@ sub _run_system {
         $args_to_show[0] =~ /_create\.pl$/ and
         $args_to_show[1] eq "model"
     ) {
-        $args_to_show[8] = "<secret>" if defined $args_to_show[8];
+        $args_to_show[8] = "<secret>" if
+            defined $args_to_show[8] and
+                $args_to_show[8] ne "";
     }
 
     if ( $ARGV{"--verbose"} ) {
@@ -103,12 +105,14 @@ sub _run_system {
     }
 
     ## some known sdterr lines we do not show:
-    my @e = split /\n/, $e;
-    my @e2 = @e;
-    @e2 = grep !/^Dumping manual schema for/, @e2;
-    @e2 = grep !/^Schema dump completed\./, @e2;
+    if ($e) {
+        my @e = split /\n/, $e;
+        my @e2 = @e;
+        @e2 = grep !/^Dumping manual schema for/, @e2;
+        @e2 = grep !/^Schema dump completed\./, @e2;
 
-    print $_,"\n" for @e2;
+        print $_,"\n" for @e2;
+    }
 
 }
 sub _finalize_argv {
@@ -181,10 +185,11 @@ sub _finalize_argv {
         delete $ARGV{'-schema'};
     }
 
+    ## some defaults that will work for sqlite at least
     $ARGV{'--dbuser'} //= "";
     $ARGV{'--dbpass'} //= "";
 
-    if ( $dsn_0 ne $ARGV{'--dsn'} ) {
+    if ( defined $dsn_0 and $dsn_0 ne $ARGV{'--dsn'} ) {
         l->debug( "dsn changed to '$ARGV{'--dsn'}'" );
     }
 
@@ -547,7 +552,7 @@ might need for a catalyst app.
 
 =head1 VERSION
 
-This document describes App::CatalystStarter::Bloated version 0.0.1
+This document describes App::CatalystStarter::Bloated version 0.9.0
 
 =head1 SYNOPSIS
 
@@ -556,9 +561,8 @@ This document describes App::CatalystStarter::Bloated version 0.0.1
 
 =head1 DESCRIPTION
 
-=for author to fill in:
-    Write a full description of the module and its features here.
-    Use subsections (=head2, =head3) as appropriate.
+This distribution provides an alternative script to start catalyst
+projecst.
 
 =head1 INTERFACE
 
@@ -568,45 +572,14 @@ The function that does it all.
 
 =head1 DIAGNOSTICS
 
-=for author to fill in:
-    List every single error and warning message that the module can
-    generate (even the ones that will "never happen"), with a full
-    explanation of each problem, one or more likely causes, and any
-    suggested remedies.
-
-=over
-
-=item C<< Error message here, perhaps with %s placeholders >>
-
-[Description of error here]
-
-=item C<< Another error message here >>
-
-[Description of error here]
-
-[Et cetera, et cetera]
-
-=back
+Will come in next version
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
-=for author to fill in:
-    A full explanation of any configuration system(s) used by the
-    module, including the names and locations of any configuration
-    files, and the meaning of any environment variables or properties
-    that can be set. These descriptions must also include details of any
-    configuration language used.
-
 App::CatalystStarter::Bloated requires no configuration files or environment variables.
-
 
 =head1 DEPENDENCIES
 
-=for author to fill in:
-    A list of all the other modules that this module relies upon,
-    including any restrictions on versions, and an indication whether
-    the module is part of the standard Perl distribution, part of the
-    module's distribution, or must be installed separately. ]
 
 None.
 
@@ -640,6 +613,10 @@ Please report any bugs or feature requests to
 C<bug-app-catalyststarter-bloated@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
+
+=head1 SEE ALSO
+
+L<Catalyst::Runtime>
 
 =head1 AUTHOR
 
