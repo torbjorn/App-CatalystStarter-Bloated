@@ -4,4 +4,4 @@ BEGIN {
 use_ok( 'App::CatalystStarter::Bloated' );
 }
 
-diag( "Testing App::CatalystStarter::Bloated $App::CatalystStarter::Bloated::VERSION" );
+note( "Testing App::CatalystStarter::Bloated $App::CatalystStarter::Bloated::VERSION" );
