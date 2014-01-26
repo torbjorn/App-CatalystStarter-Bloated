@@ -42,7 +42,7 @@ sub deploy {
     _move_css_js_fonts();
 
     $az->extractTree( "initializr", $dir );
-    l->info( "HTML5: template unzipped to root/" );
+    l->info( "HTML5: template unzipped to catalyst root" );
 
 }
 sub _initialize_from_cache {
