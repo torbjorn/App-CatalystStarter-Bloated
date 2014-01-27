@@ -33,11 +33,15 @@ This app and its module is currently at a puny version 0.0.1
 
 =head1 SYNOPSIS
 
-# just like catalyst.pl MyCatApp
-catalyst-fatstart.pl -n MyCatApp
+catalyst-fatstart.pl -n MyCatApp [options]
 
-# the same, but adds a
-
+ Options:
+  --TT         Adds a C::View::TT component, defaults to HTML.pm
+  --JSON       Adds a C::View::JSON component, defaults to JSON.pm
+  --dsn        Specify a dsn for a model
+  --model      Set model name. Default available
+  --schema     Schema class. Default available
+  a lot more, see --usage, --man, --help
 
 =head1 DESCRIPTION
 
@@ -48,31 +52,39 @@ Furthermore it optionally does zero or more of the following:
 
 =over
 
-=item Adds a TT view, see --TT. Also see --views which is short for
+=item *
+
+Adds a TT view, see --TT. Also see --views which is short for
 doing both TT and JSON.
 
-=item Adds a JSON view, see --JSON
+=item *
+Adds a JSON view, see --JSON
 
-=item Adds a model with a schema. If not spesified, they get default
+=item *
+
+Adds a HTML5 template. Currently from initializr.com with a reasonable selection including jquery and bootstrap.
+
+=item *
+Adds a model with a schema. If not spesified, they get default
 names. Note:
 
 =over
 
-=item Only ever does DBIC::Schema models. Do not use this is you use
+=item ·
+
+Only ever does DBIC::Schema models. Do not use this if you use
 other types of models.
 
-=item Always uses create=static to create schema files. Do not create
-a model with this tool if you don't mean to create schema files.
+=item ·
+
+Always uses create=static to create schema files. Do not create a
+model with this tool if you don't mean to create schema files. Also
+requires a working db connection somewhere that contains at least one
+sql schema.
 
 =back
 
-=item Adds a HTML5 template. Currently from initializr.com with a reasonable selection including jquery and bootstrap.
-
 =back
-
-=head1 USAGE
-
-    catalyst-fatstart.pl [options] -n[ame]=name-of-catalyst-app
 
 =head1 REQUIRED ARGUMENTS
 
