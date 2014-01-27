@@ -615,19 +615,29 @@ In short it does the following:
 
 =over
 
-=item Calls catalyst.pl to create the catalyst project
+=item *
 
-=item Sets up a TT view as ::HTML and a JSON view as ::JSON
+Calls catalyst.pl to create the catalyst project
 
-=item If given a --dsn, runs create model and provides default names
+=item *
+
+Sets up a TT view as ::HTML and a JSON view as ::JSON
+
+=item *
+
+If given a --dsn, runs create model and provides default names
 for schema and model classes.
 
-=item If using a dbi:Pg dsn, looks in your ~/.pgpass to find usernames
+=item *
+
+If using a dbi:Pg dsn, looks in your ~/.pgpass to find usernames
 and passwords and even intelligently completes your dsn if you are
 missing hostname and or port.
 
-=item Sets up a TT wrapper based on a HTML5 template intializr.com and
-points css, js images and fonts to /static
+=item *
+
+Sets up a TT wrapper based on a HTML5 template intializr.com and
+points its css, js images and fonts to /static
 
 =back
 
