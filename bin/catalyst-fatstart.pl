@@ -104,7 +104,7 @@ catalyst.pl name
 
 =over
 
-=item -[-]TT [=] [<HTML>]
+=item -[-][no]TT [=] [<HTML>]
 
 Add a Catalyst::View::TT view, defaults to YourApp::View::HTML.
 
@@ -185,8 +185,7 @@ AppName::Schema.
 A DSN to set up a db connection for one model in your catalyst app.
 
 If user and pass are not specified it will try the dsn without
-credentials. If it fails, it will prompt you for credentials unless
-you specify --noninteractive.
+credentials. Expects connection to succeed.
 
 =item -[-][no]dsnfix
 
