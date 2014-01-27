@@ -165,12 +165,13 @@ Short hand for saying --TT HTML and --JSON JSON
 =item -[-]model [=] [<modelname>]
 
 Package name to use for your model. If modelname not specified,
-defaults to the catalyst name and "DB", ie "CatAppDB"
+defaults to the catalyst name and "DB", ie "CatNameDB"
 
 You can also put a dsn in here. It will then be reassigned to the
 --dsn option, and the default model name will be used.
 
-Note, *only* does DBIC::Schema.
+Note, *only* does DBIC::Schema. Do not use any of the model logic if
+you do not want a DBIC::Schema model.
 
 =for Euclid:
   modelname.opt_default = "AppNameDB"
@@ -178,7 +179,7 @@ Note, *only* does DBIC::Schema.
 =item -[-]schema [=] <SchemaClass>
 
 The name of the schema class to go with the dbic model. Defaults to
-AppName::Schema.
+CatName::Schema, where CatName is the name of the catalyst app.
 
 =item -[-]dsn [=] <dsn>
 
@@ -186,6 +187,10 @@ A DSN to set up a db connection for one model in your catalyst app.
 
 If user and pass are not specified it will try the dsn without
 credentials. Expects connection to succeed.
+
+B<Important>: Will set --model and --schema with default names unless
+they are also specified. Default names currently are CatNameDB and
+CatName::Schema.
 
 =item -[-][no]dsnfix
 
