@@ -33,6 +33,8 @@ my $builder = Module::Build->new(
         'Module::Build'       => '0.42',
     },
     add_to_cleanup      => [ 'App-CatalystStarter-Bloated-*' ],
+    script              => [ 'bin/catalyst-fatstart.pl' ],
+    share_dir           => { module => { 'App::CatalystStarter::Bloated::Initializr' => ['share'] } },
 );
 
 $builder->create_build_script();

@@ -135,16 +135,7 @@ sub _finalize_argv {
     if ( not $ARGV{'--nopgpass'} ) {
         $ARGV{'--pgpass'} = $ARGV{'-pgpass'} = 1
     }
-
-    if ( not $ARGV{'--nohtml5'}) {
-        @ARGV{qw/-html5 --html5 -h5 --h5/} = (1)x4;
-    }
     ## defaults done
-
-    if ( not $ARGV{'--noTT'}) {
-        $ARGV{'-TT'} //= "HTML";
-        $ARGV{'--TT'} //= "HTML";
-    }
 
     ## html5 sets TT
     if ($ARGV{'--html5'}) {

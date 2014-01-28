@@ -10,8 +10,16 @@ use Carp qw< carp croak confess cluck >;
 
 use Getopt::Euclid;
 
+use Test::File::ShareDir
+    -share => {
+        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
+    };
+
 use App::CatalystStarter::Bloated;
-App::CatalystStarter::Bloated::run;
+# App::CatalystStarter::Bloated::run;
+
+use Data::Dumper;
+print Dumper \%ARGV;
 
 __END__
 
@@ -99,7 +107,7 @@ catalyst.pl name
 
 =over
 
-=item --[no]TT [=] [<HTML>]
+=item -[-]TT [=] [<HTML>]
 
 Add a Catalyst::View::TT view, defaults to YourApp::View::HTML.
 
@@ -120,8 +128,7 @@ Also touches root/index.tt2 and root/wrapper.tt2. If wrapper.tt2 is
 empty it inserts [% content %] in it.
 
 =for Euclid:
-    HTML.opt_default = "HTML"
-    false: --noTT
+    HTML.opt_default: "HTML"
 
 =item --JSON [=] [<JSON>]
 
@@ -137,7 +144,7 @@ This means that only data in $c->stash->{json} will be included in
 output. Remove this config line afterwards if you do not want it.
 
 =for Euclid:
-    JSON.opt_default = "JSON"
+    JSON.opt_default: "JSON"
 
 =item --[no]html5 | --[no]h5
 
@@ -150,9 +157,6 @@ be customized.
 When downloaded it fills root/wrapper.tt2 with content from the
 index.html from initializr.com and inserts [% content %] and touches
 root/index.tt2.
-
-=for Euclid:
-    false: --nohtml5
 
 =item --views
 
@@ -170,7 +174,7 @@ Note, *only* does DBIC::Schema. Do not use any of the model logic if
 you do not want a DBIC::Schema model.
 
 =for Euclid:
-  modelname.opt_default = "AppNameDB"
+  modelname.opt_default: "AppNameDB"
 
 =item -[-]schema [=] <SchemaClass>
 
