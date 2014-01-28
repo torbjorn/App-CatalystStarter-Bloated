@@ -4,23 +4,21 @@ use strict;
 use warnings;
 use utf8;
 use Test::Most;
-# use Test::FailWarnings;
+use Test::FailWarnings;
 
 use lib 't/lib';
 use TestUtils;
 
 use_ok "App::CatalystStarter::Bloated", ":test";
 
-## html5 defaults
-
-## check that html5 gets initalized with right defaults
+## the default
 {
     local %ARGV = test_argv;
 
     App::CatalystStarter::Bloated::_finalize_argv();
 
-    cmp_deeply( [@ARGV{qw/-html5 --html5 -h5 --h5/}],
-                [1,1,1,1], "html5 defaults" );
+    cmp_deeply( [@ARGV{qw/-html5 --html5 -h5 --h5 -TT --TT/}],
+                [1,1,1,1,"HTML","HTML"], "html5 defaults" );
 
 }
 
