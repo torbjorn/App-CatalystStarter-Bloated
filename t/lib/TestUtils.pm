@@ -4,19 +4,64 @@ use strict;
 use warnings;
 
 use Path::Tiny;
+use IO::All;
 
 use base 'Exporter';
 our @EXPORT = qw/clean_cat_dir
                  test_argv
                  goto_test_dir
                  cat_name
-                 proj_dir test_dir/;
+                 proj_dir test_dir
+                 fatstart
+                 a_temp_dir
+                 go_back
+                 temp_sqlite_db
+                /;
+
+use Test::File::ShareDir
+    -share => {
+        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
+    };
 
 my $proj_dir = Path::Tiny->cwd;
 
 my $cat_name;
 
 my $test_dir;
+
+sub a_temp_dir {
+    return Path::Tiny->tempdir;
+}
+
+sub go_back {
+    chdir $proj_dir;
+}
+
+sub fatstart {
+    return path( $proj_dir, "bin", "catalyst-fatstart.pl" )->absolute;
+}
+
+sub temp_sqlite_db {
+
+    my($where, $fname) = @_;
+
+    $where //= path(".")->absolute;
+    $fname //= "db.sqlite";
+
+    my $sql = <<SQL;
+create table foo (
+ bar text,
+ baz integer,
+ id integer primary key );
+SQL
+
+    my $p = path( $where, $fname );
+
+    $sql > io->pipe("sqlite3 $p");
+
+    return ($p,"dbi:SQLite:dbname=" . $p);
+
+}
 
 sub proj_dir {
     return $proj_dir;

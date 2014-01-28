@@ -13,6 +13,11 @@ use Getopt::Euclid;
 use App::CatalystStarter::Bloated;
 App::CatalystStarter::Bloated::run;
 
+use Test::File::ShareDir
+    -share => {
+        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
+    };
+
 __END__
 
 =encoding utf8
@@ -34,8 +39,8 @@ catalyst-fatstart.pl -n MyCatApp [options]
   --TT         Adds a C::View::TT component, defaults to HTML.pm
   --JSON       Adds a C::View::JSON component, defaults to JSON.pm
   --dsn        Specify a dsn for a model
-  --model      Set model name. Default available
-  --schema     Schema class. Default available
+  --model      Set model name. Default: name . "DB"
+  --schema     Schema class. Default: name . "::Schema"
   a lot more, see --usage, --man, --help
 
 =head1 DESCRIPTION
@@ -53,6 +58,7 @@ Adds a TT view, see --TT. Also see --views which is short for
 doing both TT and JSON.
 
 =item *
+
 Adds a JSON view, see --JSON
 
 =item *
@@ -60,6 +66,7 @@ Adds a JSON view, see --JSON
 Adds a HTML5 template. Currently from initializr.com with a reasonable selection including jquery and bootstrap.
 
 =item *
+
 Adds a model with a schema. If not spesified, they get default
 names. Note:
 
@@ -122,7 +129,7 @@ empty it inserts [% content %] in it.
 =for Euclid:
     HTML.opt_default: "HTML"
 
-=item --JSON [=] [<JSON>]
+=item -[-]JSON [=] [<JSON>]
 
 Add a Catalyst::View::JSON view, defaults to YourApp::View::JSON. The
 same rules and options applies as to --TT
@@ -150,9 +157,9 @@ When downloaded it fills root/wrapper.tt2 with content from the
 index.html from initializr.com and inserts [% content %] and touches
 root/index.tt2.
 
-=item --views
+=item -[-]views
 
-Short hand for saying --TT HTML and --JSON JSON
+Short hand for saying --TT and --JSON with default names
 
 =item -[-]model [=] [<modelname>]
 
