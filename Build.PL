@@ -27,6 +27,7 @@ my $builder = Module::Build->new(
         'Sys::SigAction'      => '0.21',
         'Test::Output'        => '1.02',
         'Test::File::ShareDir' => '0.3.1',
+        'Module::Build'       => '0.42',
         'Catalyst::Runtime'   => 0,
     },
     add_to_cleanup      => [ 'App-CatalystStarter-Bloated-*' ],
