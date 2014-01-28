@@ -15,7 +15,6 @@ t/complete_dsn_from_pgpass_data.t
 t/create_json.t
 t/creater.t
 t/create_tt.t
-t/dbi_connect_timeout.t
 t/dsn.t
 t/finalize_argv.t
 t/fix_dbi_driver_case.t
@@ -29,3 +28,5 @@ share/initializr-verekia-4.0.zip
 t/script/name.t
 t/script/model.t
 t/script/views.t
+META.yml
+META.json
