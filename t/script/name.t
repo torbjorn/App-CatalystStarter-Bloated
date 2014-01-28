@@ -32,7 +32,7 @@ my_subtest "name by -n" => sub {
     ok( -d "foo/t", "app dir foo/ created" );
 };
 my_subtest "name by --n" => sub {
-    run_ok( fatstart, [qw/--n bar/], "name by --name" );
+    run_ok( fatstart, [qw/--n bar/], "name by --n" );
     ok( -d "bar/t", "app dir bar/ created" );
 };
 my_subtest "name by -name" => sub {
@@ -40,7 +40,7 @@ my_subtest "name by -name" => sub {
     ok( -d "foo/t", "app dir foo/ created" );
 };
 my_subtest "name by --name" => sub {
-    run_ok( fatstart, [qw/--name bar/], "name by --nameame" );
+    run_ok( fatstart, [qw/--name bar/], "name by --name" );
     ok( -d "bar/t", "app dir bar/ created" );
 };
 
