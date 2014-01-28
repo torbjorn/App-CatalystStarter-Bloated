@@ -139,15 +139,17 @@ sub _finalize_argv {
     if ( not $ARGV{'--nohtml5'}) {
         @ARGV{qw/-html5 --html5 -h5 --h5/} = (1)x4;
     }
+    ## defaults done
 
     if ( not $ARGV{'--noTT'}) {
-        @ARGV{qw/-TT --TT/} = (1)x2;
+        $ARGV{'-TT'} //= "HTML";
+        $ARGV{'--TT'} //= "HTML";
     }
-    ## defaults done
 
     ## html5 sets TT
     if ($ARGV{'--html5'}) {
-        @ARGV{qw/-TT --TT/} = (1)x2;
+        $ARGV{'-TT'} //= "HTML";
+        $ARGV{'--TT'} //= "HTML";
     }
 
     ## views triggers json and tt
