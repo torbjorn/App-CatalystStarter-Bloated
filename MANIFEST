@@ -25,6 +25,7 @@ t/lib/.pgpass
 t/lib/TestUtils.pm
 t/mk_app.t
 t/pgpass.t
-META.yml
-META.json
 share/initializr-verekia-4.0.zip
+t/script/name.t
+t/script/model.t
+t/script/views.t
