@@ -6,10 +6,8 @@ use utf8;
 use Test::Most;
 use Test::FailWarnings;
 
-use Test::File::ShareDir
-    -share => {
-        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
-    };
+use lib 't/lib';
+use TestUtils;
 
 use_ok "App::CatalystStarter::Bloated::Initializr";
 
