@@ -10,16 +10,8 @@ use Carp qw< carp croak confess cluck >;
 
 use Getopt::Euclid;
 
-use Test::File::ShareDir
-    -share => {
-        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
-    };
-
 use App::CatalystStarter::Bloated;
-# App::CatalystStarter::Bloated::run;
-
-use Data::Dumper;
-print Dumper \%ARGV;
+App::CatalystStarter::Bloated::run;
 
 __END__
 
