@@ -99,7 +99,7 @@ catalyst.pl name
 
 =over
 
-=item -[-][no]TT [=] [<HTML>]
+=item --[no]TT [=] [<HTML>]
 
 Add a Catalyst::View::TT view, defaults to YourApp::View::HTML.
 
@@ -121,8 +121,9 @@ empty it inserts [% content %] in it.
 
 =for Euclid:
     HTML.opt_default = "HTML"
+    false: --noTT
 
-=item -[-]JSON [=] [<JSON>]
+=item --JSON [=] [<JSON>]
 
 Add a Catalyst::View::JSON view, defaults to YourApp::View::JSON. The
 same rules and options applies as to --TT
@@ -138,7 +139,7 @@ output. Remove this config line afterwards if you do not want it.
 =for Euclid:
     JSON.opt_default = "JSON"
 
-=item -[-][no]html5 | -[-][no]h5
+=item --[no]html5 | --[no]h5
 
 Default on. Use --nohtml5 or --noh5 to skip this step.
 
