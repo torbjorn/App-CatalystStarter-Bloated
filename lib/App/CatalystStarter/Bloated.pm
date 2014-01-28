@@ -539,6 +539,8 @@ sub _mk_html5 {
 ## run test
 sub _test_new_cat {
 
+    return if $ARGV{'--notest'};
+
     chdir $cat_dir;
 
     ## Assumes cwd is at cat_dir
