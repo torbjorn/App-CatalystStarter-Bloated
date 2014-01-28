@@ -602,8 +602,7 @@ __END__
 
 =head1 NAME
 
-App::CatalystStarter::Bloated - Tries really hard to set up all you
-might need for a catalyst app.
+App::CatalystStarter::Bloated - Creates a catalyst app, a TT view, a model and a HTML5 wrapper template from initalizr.com.
 
 =head1 VERSION
 
