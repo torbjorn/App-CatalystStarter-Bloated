@@ -11,17 +11,6 @@ use TestUtils;
 
 use_ok "App::CatalystStarter::Bloated", ":test";
 
-## the default
-{
-    local %ARGV = test_argv;
-
-    App::CatalystStarter::Bloated::_finalize_argv();
-
-    cmp_deeply( [@ARGV{qw/-html5 --html5 -h5 --h5 -TT --TT/}],
-                [1,1,1,1,"HTML","HTML"], "html5 defaults" );
-
-}
-
 ## Check that they arent set when --no prefixed
 {
     local %ARGV = test_argv( '--nohtml5' => 1 );
