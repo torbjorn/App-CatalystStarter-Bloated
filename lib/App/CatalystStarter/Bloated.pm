@@ -10,7 +10,6 @@ use Carp;
 
 use version; our $VERSION = qv('0.9.0');
 
-use IO::Prompter;
 use File::Which qw(which);
 use File::Glob q(:bsd_glob);
 use Path::Tiny qw(path cwd);
@@ -67,6 +66,10 @@ sub _catalyst_path {
     }
     elsif ( $what eq "TT" ) {
         @extra = ("lib", $ARGV{"--name"}, "View", $ARGV{"--TT"}.".pm");
+        @_ = ();
+    }
+    elsif ( $what eq "JSON" ) {
+        @extra = ("lib", $ARGV{"--name"}, "View", $ARGV{"--JSON"}.".pm");
         @_ = ();
     }
     else {
@@ -521,11 +524,11 @@ sub _create_TT {
 
     write_file( $tt_pm, $pm );
 
-    _verify_TT_view();
-
     l->info( sprintf "Created TT view as %s::View::%s",
              @ARGV{qw/--name --TT/}
          );
+
+    _verify_TT_view();
 
 } ## create.tt
 sub _create_JSON {
@@ -533,6 +536,9 @@ sub _create_JSON {
     return unless my $json = $ARGV{"--JSON"};
 
     _run_system( _creater() => "view", $json, "JSON" );
+
+    _verify_JSON_view();
+
     l->info( sprintf "Created JSON view as %s::View::%s",
              @ARGV{qw/--name --JSON/}
      );
@@ -601,7 +607,7 @@ sub _test_new_cat {
 }
 sub _verify_TT_view {
 
-    my $view_file = $_[0] or _catalyst_path( "V", $ARGV{'--TT'});
+    my $view_file = $_[0] || _catalyst_path( "TT" );
 
     return if not defined $view_file;
 
@@ -626,7 +632,7 @@ sub _verify_TT_view {
 }
 sub _verify_JSON_view {
 
-    my $view_file = $_[0] or _catalyst_path( "V", $ARGV{'--JSON'});
+    my $view_file = $_[0] || _catalyst_path( "JSON" );
 
     return if not defined $view_file;
 
@@ -648,6 +654,8 @@ sub _verify_JSON_view {
         l->error( "$view_class didn't get expose_stash properly configured, ".
                       "must be fixed manually, expected to be ['json']." );
     }
+
+    l->info( "JSON verify complete" );
 
 }
 
