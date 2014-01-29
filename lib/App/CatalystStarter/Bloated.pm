@@ -619,11 +619,34 @@ sub _verify_TT_view {
     if ( not defined $cnf->{WRAPPER} or $cnf->{WRAPPER} ne "wrapper.tt2" ) {
         l->error( "$view_class didn't get WRAPPER properly configured, must be fixed manually." );
     }
-    else {
-        l->error( "WRAPPER SEEMS TO BE IN ORDER: " . $cnf->{WRAPPER} );
-    }
     if ( not defined $cnf->{TEMPLATE_EXTENSION} or $cnf->{TEMPLATE_EXTENSION} ne ".tt2" ) {
         l->error( "$view_class didn't get TEMPLATE_EXTENSION properly configured, must be fixed manually." );
+    }
+
+}
+sub _verify_JSON_view {
+
+    my $view_file = $_[0] or _catalyst_path( "V", $ARGV{'--JSON'});
+
+    return if not defined $view_file;
+
+    eval { require $view_file };
+
+    if ( $@ ) {
+        l->error( "$view_file contains errors and must be edited by hand." );
+        l->error( "$@" );
+        return;
+    }
+
+    my $view_class = $ARGV{'--name'} . "::View::" . $ARGV{'--JSON'};
+
+    my $cnf = $view_class->config;
+    if ( not defined $cnf->{expose_stash} or
+             ref $cnf->{expose_stash} ne "ARRAY" or
+                 $cnf->{expose_stash}[0] ne "json"
+         ) {
+        l->error( "$view_class didn't get expose_stash properly configured, ".
+                      "must be fixed manually, expected to be ['json']." );
     }
 
 }
