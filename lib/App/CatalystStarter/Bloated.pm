@@ -629,6 +629,8 @@ sub _verify_TT_view {
         l->error( "$view_class didn't get TEMPLATE_EXTENSION properly configured, must be fixed manually." );
     }
 
+    l->debug( "Modifications to TT view ok" );
+
 }
 sub _verify_JSON_view {
 
@@ -655,7 +657,7 @@ sub _verify_JSON_view {
                       "must be fixed manually, expected to be ['json']." );
     }
 
-    l->info( "JSON verify complete" );
+    l->debug( "Modifications to JSON view ok" );
 
 }
 
