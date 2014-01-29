@@ -631,7 +631,7 @@ sub _verify_TT_view {
 
     l->debug( "Modifications to TT view ok" );
 
-}
+} ## verify_tt.t
 sub _verify_JSON_view {
 
     my $view_file = $_[0] || _catalyst_path( "JSON" );
@@ -659,7 +659,7 @@ sub _verify_JSON_view {
 
     l->debug( "Modifications to JSON view ok" );
 
-}
+} ## verify_json.t
 
 ## This does it all
 sub run {
