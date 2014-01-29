@@ -12,7 +12,7 @@ use Path::Tiny;
 use lib 't/lib';
 use TestUtils;
 
-use_ok "App::CatalystStarter::Bloated";#, ":test";
+use_ok "App::CatalystStarter::Bloated";
 
 my(
     $view_with_syntax_error,
