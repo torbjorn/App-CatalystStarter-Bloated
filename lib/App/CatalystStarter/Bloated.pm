@@ -65,6 +65,10 @@ sub _catalyst_path {
     elsif ( $what eq "V" ) {
         @extra = ("lib", $ARGV{"--name"}, "View");
     }
+    elsif ( $what eq "TT" ) {
+        @extra = ("lib", $ARGV{"--name"}, "View", $ARGV{"--TT"}.".pm");
+        @_ = ();
+    }
     else {
         @extra = ($what);
     }
@@ -597,7 +601,9 @@ sub _test_new_cat {
 }
 sub _verify_TT_view {
 
-    my $view_file = shift;
+    my $view_file = $_[0] or _catalyst_path( "V", $ARGV{'--TT'});
+
+    return if not defined $view_file;
 
     eval { require $view_file };
 
