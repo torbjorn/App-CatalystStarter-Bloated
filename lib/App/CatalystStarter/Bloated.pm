@@ -614,7 +614,7 @@ EOS
     my $p = _catalyst_path( "C", "Root.pm" );
 
     my $substitute_this = q[$c->response->body( $c->welcome_message );];
-    my $with_this = q[$c->stash->{jumbotron} = { header => "Hello World", body => "This is a jumbotron header, view source for details" };] . "\n";
+    my $with_this = q[$c->stash->{jumbotron} = { header => "Splashy message", body => "This is a 'jumbotron' header, view source for details" };] . "\n";
     (my $root = $p->slurp) =~ s|\Q$substitute_this|# $&\n    $with_this|;
 
     $p->spew( $root );
