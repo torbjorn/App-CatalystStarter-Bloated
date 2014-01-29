@@ -63,7 +63,8 @@ Adds a JSON view, see --JSON
 
 =item *
 
-Adds a HTML5 template. Currently from initializr.com with a reasonable selection including jquery and bootstrap.
+Adds a HTML5 template. Currently a twitter bootstrap template from
+initializr.com.
 
 =item *
 
