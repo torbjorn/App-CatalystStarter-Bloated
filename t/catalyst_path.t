@@ -131,6 +131,28 @@ subtest "path to TT" => sub {
 
 };
 
+$ARGV{"--JSON"} = "Baz";
+
+subtest "path to JSON" => sub {
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "JSON" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "Baz.pm")->relative( proj_dir ),
+        "path to Baz.pm view using JSON"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "JSON", "gar", "bage" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "Baz.pm")->relative( proj_dir ),
+        "path to JSON, trailing garbage removed"
+    );
+
+};
+
 clean_cat_dir;
 
 done_testing;

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 use Test::Most;
-use Test::FailWarnings;
+# use Test::FailWarnings;
 use Test::Output;
 
 use lib 't/lib';
