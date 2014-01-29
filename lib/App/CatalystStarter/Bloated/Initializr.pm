@@ -93,9 +93,29 @@ sub _setup_index {
         my $p = $div->parent;
 
         $p->prepend( "\n[% IF jumbotron %]" .
-                         "[% # put a <h1> and one or more <p> in here %]\n    "
+                         "[% # put a h1 and one or more p in here %]\n    "
                      );
-        $div->replace_content( "[% jumbotron %]" );
+
+        my $h1 = $div->find( 'h1' )->first;
+        $h1->replace_content( '[% jumbotron.header %]' );
+        my $ps = $div->find( 'p' );
+
+        my $pa = $ps->first;
+
+        $pa->replace_content( '[% jumbotron.body %]' );
+
+        my $i;
+        $div->children->each
+            ( sub {
+
+                  if ( ++$i > 2 ) {
+                      $_[0]->remove;
+                  }
+
+              });
+
+
+
         $p->append( "\n[% END %]\n" );
         l->debug( "HTML5: Wrapper jumbotron template var inserted" );
     }
@@ -132,14 +152,12 @@ sub _setup_index {
         });
     l->debug("HTML5: references to img/ css/ js/ and fonts/ changed to static/*");
 
-    # print "$dom";
-
     (my $new_index_content = "$dom") =~ s/QUOTEHERE/"/g;
 
     ## this won't be handled because it's not an html element
     ## attribute, and we're not parsing javascript (yet?)
-    $new_index_content =~ s{\Qdocument.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')}
-                           {document.write('<script src="[% c.uri_for("/static/js/vendor/jquery-1.10.1.min.js") %]"><\/script>')};
+    $new_index_content =~ s{\Qdocument.write('<script src="js/vendor/jquery-1.10.1.min.js">}
+                           {document.write('<script src="[% c.uri_for("/static/js/vendor/jquery-1.10.1.min.js") %]">};
 
     ## replace it into the zip
     my $index_member = _safely_search_one_member( qr/index\.html$/ );

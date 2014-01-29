@@ -511,18 +511,27 @@ sub _create_TT {
     my $pm = read_file( $tt_pm );
 
     if ( not $pm =~ s/(TEMPLATE_EXTENSION\s*=>\s*'.tt)(',)/${1}2$2/ ) {
-        l->error
-            ( sprintf "Failed setting TEMPLATE_EXTENSION to .tt2. Edit %s to make it right",
-              $tt_pm );
+        # l->error
+        #     ( sprintf "Failed setting TEMPLATE_EXTENSION to .tt2. Edit %s to make it right",
+        #       $tt_pm );
     }
 
     if ( not $pm =~ s/^(__PACKAGE__->config\()(\s+)/$1$2WRAPPER => 'wrapper.tt2',$2/ms ) {
-        l->error
-            ( sprintf "Failed setting WRAPPER to wrapper.tt2. Edit %s to make it right",
-              $tt_pm );
+        # l->error
+        #     ( sprintf "Failed setting WRAPPER to wrapper.tt2. Edit %s to make it right",
+        #       $tt_pm );
     }
 
     write_file( $tt_pm, $pm );
+
+    ## alter config to set default view
+    my $p = _catalyst_path( "lib", $ARGV{'--name'}.".pm" );
+    my $config = $p->slurp;
+    if ( not $config =~ s/^(__PACKAGE__->config\()(\s+)/$1$2default_view => '$ARGV{"--TT"}',$2/ms ) {
+        # l->error
+        #     ( sprintf "Failed setting default_view in config. Edit %s and change it to $ARGV{'--TT'}", $p );
+    }
+    $p->spew( $config );
 
     l->info( sprintf "Created TT view as %s::View::%s",
              @ARGV{qw/--name --TT/}
@@ -537,11 +546,28 @@ sub _create_JSON {
 
     _run_system( _creater() => "view", $json, "JSON" );
 
-    _verify_JSON_view();
+    my $p = _catalyst_path( "JSON" );
+    my $json_code = $p->slurp;
+
+    my $extra = <<'JSON';
+
+__PACKAGE__->config(
+    # expose only the json key in stash
+    expose_stash => [ qw(json) ],
+);
+JSON
+
+    if ( not $json_code =~ s/use base 'Catalyst::View::JSON';/$&\n$extra/ ) {
+        # l->error("failed configuring expose_stash in json");
+    }
+
+    $p->spew( $json_code );
 
     l->info( sprintf "Created JSON view as %s::View::%s",
              @ARGV{qw/--name --JSON/}
      );
+
+    _verify_JSON_view();
 
 } ## create_json.tt
 sub _mk_views {
@@ -576,10 +602,27 @@ sub _mk_html5 {
         return
     }
 
-    App::CatalystStarter::Bloated::Initializr::deploy(path($cat_dir,"root"));
+    App::CatalystStarter::Bloated::Initializr::deploy( _catalyst_path("root") );
+
+    _catalyst_path( "root", "index.tt2" )->spew(<<'EOS');
+<div class="row"><div class="col-lg-4">
+<h2>Hi there</h2>
+<p>Welcome to the brand new [% c.config.name %]!</p>
+</div></div>
+EOS
+
+    my $p = _catalyst_path( "C", "Root.pm" );
+
+    my $substitute_this = q[$c->response->body( $c->welcome_message );];
+    my $with_this = q[$c->stash->{jumbotron} = { header => "Hello World", body => "This is a jumbotron header, view source for details" };] . "\n";
+    (my $root = $p->slurp) =~ s|\Q$substitute_this|# $&\n    $with_this|;
+
+    $p->spew( $root );
+
 }
 
-## run test
+
+## test related
 sub _test_new_cat {
 
     return if $ARGV{'--notest'};
