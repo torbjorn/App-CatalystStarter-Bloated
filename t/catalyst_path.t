@@ -109,6 +109,28 @@ subtest "path to view" => sub {
 
 };
 
+$ARGV{"--TT"} = "Bar";
+
+subtest "path to TT" => sub {
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "TT" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "Bar.pm")->relative( proj_dir ),
+        "path to Bar.pm view using TT"
+    );
+
+    is(
+        App::CatalystStarter::Bloated::_catalyst_path
+              ( "TT", "gar", "bage" )->relative( proj_dir ),
+        test_dir(cat_name(), "lib", cat_name(),
+                 "View", "Bar.pm")->relative( proj_dir ),
+        "path to TT, trailing garbage removed"
+    );
+
+};
+
 clean_cat_dir;
 
 done_testing;
