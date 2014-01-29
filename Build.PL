@@ -27,7 +27,12 @@ my $builder = Module::Build->new(
         'Sys::SigAction'      => '0.21',
         'Test::Output'        => '1.02',
         'Test::File::ShareDir' => '0.3.1',
-        'Catalyst::Runtime'   => 0,
+        'Catalyst::Runtime'   => '5.90053',
+        'Catalyst::View::JSON'=> '0.30',
+        'Catalyst::View::TT'  => '0.41',
+        'File::Slurp'         => '9999.19',
+        'Moose'               => '2.1005',
+        'namespace::autoclean'=> '0.13',
     },
     configure_requires => {
         'Module::Build'       => '0.42',
