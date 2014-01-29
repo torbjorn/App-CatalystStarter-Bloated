@@ -24,6 +24,8 @@ use List::MoreUtils qw/all/;
 
 use Log::Log4perl qw/:easy/;
 
+use File::Slurp;
+
 use App::CatalystStarter::Bloated::Initializr;
 
 my $cat_dir;
@@ -47,6 +49,8 @@ sub import {
     l->debug( "Log level set to DEBUG" );
 
 }
+
+## related test files are listed at the closing } of each sub
 
 ## a helper for easy access to paths
 sub _catalyst_path {
@@ -120,6 +124,7 @@ sub _run_system {
 
     if ( $r ) {
         l->fatal( "system call died. It definitely shouldn't have." );
+        l->fatal( "command was: @args_to_show" );
     }
 
 }
@@ -486,9 +491,37 @@ sub _create_TT {
     return unless my $tt = $ARGV{"--TT"};
 
     _run_system( _creater() => "view", $tt, "TT" );
+
+    my $tt_pm = _catalyst_path( "V", $tt . ".pm" );
+
+    if ( not -f $tt_pm ) {
+        l->error( "View module not found where it should be, exiting. " .
+                      "You to:\n 1: change ext to .tt2 and\n 2: set WRAPPER to wrapper.tt2." );
+        return;
+    }
+
+    ## trust regex to modify the file
+    my $pm = read_file( $tt_pm );
+
+    if ( not $pm =~ s/(TEMPLATE_EXTENSION\s*=>\s*'.tt)(',)/${1}2$2/ ) {
+        l->error
+            ( sprintf "Failed setting TEMPLATE_EXTENSION to .tt2. Edit %s to make it right",
+              $tt_pm );
+    }
+
+    if ( not $pm =~ s/^(__PACKAGE__->config\()(\s+)/$1$2WRAPPER => 'wrapper.tt2',$2/ms ) {
+        l->error
+            ( sprintf "Failed setting WRAPPER to wrapper.tt2. Edit %s to make it right",
+              $tt_pm );
+    }
+
+    write_file( $tt_pm, $pm );
+
+    _verify_TT_view();
+
     l->info( sprintf "Created TT view as %s::View::%s",
              @ARGV{qw/--name --TT/}
-     );
+         );
 
 } ## create.tt
 sub _create_JSON {
@@ -560,6 +593,32 @@ sub _test_new_cat {
     l->info( "Catalyst tests ok" );
 
     chdir "..";
+
+}
+sub _verify_TT_view {
+
+    my $view_file = shift;
+
+    eval { require $view_file };
+
+    if ( $@ ) {
+        l->error( "$view_file contains errors and must be edited by hand." );
+        l->error( "$@" );
+        return;
+    }
+
+    my $view_class = $ARGV{'--name'} . "::View::" . $ARGV{'--TT'};
+
+    my $cnf = $view_class->config;
+    if ( not defined $cnf->{WRAPPER} or $cnf->{WRAPPER} ne "wrapper.tt2" ) {
+        l->error( "$view_class didn't get WRAPPER properly configured, must be fixed manually." );
+    }
+    else {
+        l->error( "WRAPPER SEEMS TO BE IN ORDER: " . $cnf->{WRAPPER} );
+    }
+    if ( not defined $cnf->{TEMPLATE_EXTENSION} or $cnf->{TEMPLATE_EXTENSION} ne ".tt2" ) {
+        l->error( "$view_class didn't get TEMPLATE_EXTENSION properly configured, must be fixed manually." );
+    }
 
 }
 
