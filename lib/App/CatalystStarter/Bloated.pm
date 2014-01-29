@@ -605,12 +605,28 @@ sub _mk_html5 {
     App::CatalystStarter::Bloated::Initializr::deploy( _catalyst_path("root") );
 
     _catalyst_path( "root", "index.tt2" )->spew(<<'EOS');
-<div class="row"><div class="col-lg-4">
+<div class="row">
+
+<div class="col-lg-4">
 <h2>Hi there</h2>
 <p>Welcome to the brand new [% c.config.name %]!</p>
-</div></div>
-EOS
+</div>
 
+<div class="col-lg-4">
+<h2>Nav bar on top</h2>
+<p>Nav bar setup is easily parameterized or edited in source.</p>
+</div>
+
+<div class="col-lg-4">
+<h2>Jumbotron</h2>
+<p>The Jumbotron goes away is c->stash->{jumbotron} is not set. The
+template comes from initializr.com. More templates will come in future
+updates.</p>
+<p><a class="btn btn-default" href="http://www.initializr.com">View details &raquo;</a></p>
+</div>
+
+</div>
+EOS
     my $p = _catalyst_path( "C", "Root.pm" );
 
     my $substitute_this = q[$c->response->body( $c->welcome_message );];
