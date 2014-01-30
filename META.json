@@ -52,11 +52,11 @@
    "provides" : {
       "App::CatalystStarter::Bloated" : {
          "file" : "lib/App/CatalystStarter/Bloated.pm",
-         "version" : "v0.9.0"
+         "version" : "v0.9.1"
       },
       "App::CatalystStarter::Bloated::Initializr" : {
          "file" : "lib/App/CatalystStarter/Bloated/Initializr.pm",
-         "version" : "v0.0.1"
+         "version" : "v0.9.1"
       }
    },
    "release_status" : "stable",
@@ -65,5 +65,5 @@
          "http://www.perlfoundation.org/artistic_license_1_0"
       ]
    },
-   "version" : "v0.9.0"
+   "version" : "v0.9.1"
 }

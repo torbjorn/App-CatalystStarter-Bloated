@@ -15,10 +15,10 @@ name: App-CatalystStarter-Bloated
 provides:
   App::CatalystStarter::Bloated:
     file: lib/App/CatalystStarter/Bloated.pm
-    version: v0.9.0
+    version: v0.9.1
   App::CatalystStarter::Bloated::Initializr:
     file: lib/App/CatalystStarter/Bloated/Initializr.pm
-    version: v0.0.1
+    version: v0.9.1
 requires:
   Archive::Zip: 1.30
   Capture::Tiny: 0.23
@@ -47,4 +47,4 @@ requires:
   utf8::all: 0.011
 resources:
   license: http://www.perlfoundation.org/artistic_license_1_0
-version: v0.9.0
+version: v0.9.1
