@@ -26,6 +26,8 @@ my(
 use Catalyst::View;
 use Catalyst::View::TT;
 
+note "index changed in Root";
+
 {
     my $f = Path::Tiny->tempfile;
     $f->spew( $root_controller_plain );
@@ -48,6 +50,18 @@ use Catalyst::View::TT;
 
 {
     my $f = Path::Tiny->tempfile;
+    $f->spew( $root_controller_with_both );
+    stderr_is(
+        sub { App::CatalystStarter::Bloated::_verify_Root_index($f) },
+        "",
+        "Root controller index ok when both are ok"
+    );
+}
+
+note "jumbotron added to Root";
+
+{
+    my $f = Path::Tiny->tempfile;
     $f->spew( $root_controller_plain );
     stderr_like(
         sub { App::CatalystStarter::Bloated::_verify_Root_jumbatron($f) },
@@ -66,6 +80,15 @@ use Catalyst::View::TT;
     );
 }
 
+{
+    my $f = Path::Tiny->tempfile;
+    $f->spew( $root_controller_with_both );
+    stderr_is(
+        sub { App::CatalystStarter::Bloated::_verify_Root_jumbatron($f) },
+        "",
+        "Root controller jumbotron ok when both are ok"
+    );
+}
 
 
 done_testing;
