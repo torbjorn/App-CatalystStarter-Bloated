@@ -11,7 +11,6 @@ WriteMakefile(
     PL_FILES            => {},
     PREREQ_PM => {
         'File::Which'         => '1.09',
-        'IO::Prompter'        => '0.004010',
         'Path::Tiny'          => '0.051',
         'Test::FailWarnings'  => '0.008',
         'Test::Most'          => '0.31',
