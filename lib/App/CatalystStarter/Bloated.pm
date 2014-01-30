@@ -499,27 +499,29 @@ sub _create_TT {
 
     _run_system( _creater() => "view", $tt, "TT" );
 
-    my $tt_pm = _catalyst_path( "V", $tt . ".pm" );
+    my $tt_pm = _catalyst_path( "TT" );
 
     if ( not -f $tt_pm ) {
         l->error( "View module not found where it should be, exiting. " .
-                      "You to:\n 1: change ext to .tt2 and\n 2: set WRAPPER to wrapper.tt2." );
+                      "You have to:\n 1: change ext to .tt2 and\n 2: set WRAPPER to wrapper.tt2." );
         return;
     }
 
     ## trust regex to modify the file
     my $pm = read_file( $tt_pm );
 
-    if ( not $pm =~ s/(TEMPLATE_EXTENSION\s*=>\s*'.tt)(',)/${1}2$2/ ) {
-        # l->error
-        #     ( sprintf "Failed setting TEMPLATE_EXTENSION to .tt2. Edit %s to make it right",
-        #       $tt_pm );
+    if ( $pm =~ s/(TEMPLATE_EXTENSION\s*=>\s*'.tt)(',)/${1}2$2/ ) {
+        l->debug("Changed template extension to .tt2");
+    }
+    else {
+        l->warn("Failed changing template extension to .tt2");
     }
 
-    if ( not $pm =~ s/^(__PACKAGE__->config\()(\s+)/$1$2WRAPPER => 'wrapper.tt2',$2/ms ) {
-        # l->error
-        #     ( sprintf "Failed setting WRAPPER to wrapper.tt2. Edit %s to make it right",
-        #       $tt_pm );
+    if ( $pm =~ s/^(__PACKAGE__->config\()(\s+)/$1$2WRAPPER => 'wrapper.tt2',$2/ms ) {
+        l->debug( "Added wrapper.tt2" );
+    }
+    else {
+        l->warn( "Failed adding wrapper to view" );
     }
 
     write_file( $tt_pm, $pm );
@@ -527,11 +529,34 @@ sub _create_TT {
     ## alter config to set default view
     my $p = _catalyst_path( "lib", $ARGV{'--name'}.".pm" );
     my $config = $p->slurp;
-    if ( not $config =~ s/^(__PACKAGE__->config\()(\s+)/$1$2default_view => '$ARGV{"--TT"}',$2/ms ) {
-        # l->error
-        #     ( sprintf "Failed setting default_view in config. Edit %s and change it to $ARGV{'--TT'}", $p );
+    if ( $config =~ s/^(__PACKAGE__->config\()(\s+)/$1$2default_view => '$ARGV{"--TT"}',$2/ms ) {
+        l->debug( "Configured default view: " . $ARGV{'--TT'} );
+        $p->spew( $config );
     }
-    $p->spew( $config );
+    else {
+        l->warn( "Failed configuring default view" );
+    }
+
+    _catalyst_path( "root", "index.tt2" )->spew
+        ( "Welcome to the brand new [% c.config.name %]!" );
+    l->debug( "Wrote a basic index.tt2" );
+
+
+    _catalyst_path( "root", "wrapper.tt2" )->spew
+        ( "[% content %]\n" );
+    l->debug( "Wrote an empty wrapper.tt2" );
+
+
+    ## make index run template
+    my $r = _catalyst_path( "C", "Root.pm" );
+
+    my $substitute_this = q[$c->response->body( $c->welcome_message );];
+    (my $root = $r->slurp) =~ s|\Q$substitute_this|# $&|;
+
+    $r->spew( $root );
+
+    l->debug( "Commented response body message in sub index" );
+
 
     l->info( sprintf "Created TT view as %s::View::%s",
              @ARGV{qw/--name --TT/}
@@ -598,7 +623,7 @@ sub _mk_model {
 }
 sub _mk_html5 {
 
-    if ( $ARGV{'--nohtml5'} or $ARGV{'--noh5'}) {
+    if ( not $ARGV{'--html5'} ) {
         return
     }
 
@@ -627,11 +652,13 @@ updates.</p>
 
 </div>
 EOS
+
     my $p = _catalyst_path( "C", "Root.pm" );
 
     my $substitute_this = q[$c->response->body( $c->welcome_message );];
-    my $with_this = q[$c->stash->{jumbotron} = { header => "Splashy message", body => "This is a 'jumbotron' header, view source for details" };] . "\n";
-    (my $root = $p->slurp) =~ s|\Q$substitute_this|# $&\n    $with_this|;
+    my $with_this = q[$c->stash->{jumbotron} = { header => "Splashy message", body => "This is a 'jumbotron' header, view source and check Root controller for details" };] . "\n";
+    (my $root = $p->slurp) =~ s|(?:# )?\Q$substitute_this|$&\n    $with_this|
+        or l->error("Failed inserting jumbotron");
 
     $p->spew( $root );
 
@@ -691,6 +718,40 @@ sub _verify_TT_view {
     l->debug( "Modifications to TT view ok" );
 
 } ## verify_tt.t
+sub _verify_Root_index {
+
+    my $root_controller_file = $_[0] || _catalyst_path( "C", "Root.pm" );
+
+    if ( not ref $root_controller_file ) {
+        $root_controller_file = path( $root_controller_file );
+    }
+
+    my $root_controller = $root_controller_file->slurp;
+
+    if ( $root_controller =~ /^\s+\$c->response->body/m) {
+       l->error( "Failed fixing Root controller. Comment out the response body line." );
+    }
+
+    l->debug( "Root controller set to run index.tt2" );
+
+}
+sub _verify_Root_jumbatron {
+
+    my $root_controller_file = $_[0] || _catalyst_path( "C", "Root.pm" );
+
+    if ( not ref $root_controller_file ) {
+        $root_controller_file = path( $root_controller_file );
+    }
+
+    my $root_controller = $root_controller_file->slurp;
+
+    if ( $root_controller !~ /stash.*jumbotron.*header.*body/ ) {
+       l->error( "Failed adding jumbotron example to Root controller" );
+    }
+
+    l->debug( "Sample jumbotron data added to Root controller" );
+
+}
 sub _verify_JSON_view {
 
     my $view_file = $_[0] || _catalyst_path( "JSON" );
