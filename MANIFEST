@@ -30,3 +30,6 @@ t/script/model.t
 t/script/views.t
 META.yml
 META.json
+t/verify_json.t
+t/verify_root.t
+t/verify_tt.t
