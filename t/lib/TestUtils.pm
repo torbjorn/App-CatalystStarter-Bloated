@@ -1,10 +1,15 @@
 package TestUtils;
 
+use utf8::all;
 use strict;
 use warnings;
 
 use Path::Tiny;
 use IO::All;
+
+use Carp;
+
+use File::Which qw/which/;
 
 use base 'Exporter';
 our @EXPORT = qw/clean_cat_dir
@@ -16,6 +21,8 @@ our @EXPORT = qw/clean_cat_dir
                  a_temp_dir
                  go_back
                  temp_sqlite_db
+                 system_has_catalyst
+                 fake_mk_app
                 /;
 
 use Test::File::ShareDir
@@ -28,6 +35,37 @@ my $proj_dir = Path::Tiny->cwd;
 my $cat_name;
 
 my $test_dir;
+
+sub system_has_catalyst {
+    return if $ENV{TEST_WITHOUT_CATALYST_PL};
+    which "catalyst.pl";
+}
+
+## sets up a minimal catalyst skeleton
+sub fake_mk_app {
+
+    my $where = shift;
+    $where //= test_dir();
+
+    ## dirs
+    for ( qw/Controller Model View/) {
+        path($where, cat_name(), "lib", cat_name(), $_ )->mkpath;
+    }
+    path($where, cat_name(), "root", "static" )->mkpath;
+    path($where, cat_name(), "t" )->mkpath;
+
+    ## files
+    path($where, cat_name().".conf" )->touch;
+    path($where, cat_name(), "lib", cat_name(), "Controller", "Root.pm" )->touch;
+
+    ## attempt to update main modules cat_dir variable
+    if ( __module_is_loaded( "App::CatalystStarter::Bloated" )) {
+        App::CatalystStarter::Bloated::_set_cat_dir( path($where, cat_name()) );
+    }
+
+    return $where;
+
+}
 
 sub a_temp_dir {
     return Path::Tiny->tempdir;
@@ -114,8 +152,18 @@ sub clean_cat_dir {
     $_->remove_tree for test_dir->children;
 }
 
+sub __module_is_loaded {
+    return $INC{__module_to_pm($_[0])};
+}
+
+sub __module_to_pm {
+    (my $pm = $_[0]) =~ s|::|/|g;
+    $pm .= ".pm";
+    return $pm;
+}
+
 END {
-    chdir proj_dir;
+    go_back;
 }
 
 1;
