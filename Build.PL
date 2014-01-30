@@ -9,7 +9,6 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/App/CatalystStarter/Bloated.pm',
     requires => {
         'File::Which'         => '1.09',
-        'IO::Prompter'        => '0.004010',
         'Path::Tiny'          => '0.051',
         'Test::FailWarnings'  => '0.008',
         'Test::Most'          => '0.31',
