@@ -4,7 +4,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv('0.9.1');
 
 use File::ShareDir qw/module_file/;
 use Archive::Zip;
@@ -285,7 +285,7 @@ from initializr.com in your catalyst project
 
 =head1 VERSION
 
-This document describes App::CatalystStarter::Bloated::Initializr version 0.0.1
+This document describes App::CatalystStarter::Bloated::Initializr version 0.9.1
 
 =head1 SYNOPSIS
 
