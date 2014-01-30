@@ -16,7 +16,13 @@ local %ARGV = test_argv;
 
 goto_test_dir;
 
-App::CatalystStarter::Bloated::_mk_app();
+if ( system_has_catalyst ) {
+    App::CatalystStarter::Bloated::_mk_app();
+}
+else {
+    fake_mk_app;
+}
+
 App::CatalystStarter::Bloated::_create_TT();
 
 test_dir( cat_name(), "lib", cat_name(), "Controller", "Foo.pm" )->touch;
@@ -25,6 +31,12 @@ test_dir( cat_name(), "lib", cat_name(), "View", "Bar.pm" )->touch;
 test_dir( cat_name(), "lib", cat_name(), "View", "Baz.pm" )->touch;
 test_dir( cat_name(), "lib", cat_name(), "Model", "Baz.pm" )->touch;
 test_dir( cat_name(), "lib", cat_name(), "Model", "Foo.pm" )->touch;
+
+is(
+    App::CatalystStarter::Bloated::_catalyst_path( "scripts" )->relative( proj_dir ),
+    test_dir( cat_name(), "scripts" )->relative( proj_dir ),
+    "path to scripts"
+);
 
 # scripts dir
 is(
