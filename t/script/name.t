@@ -11,6 +11,8 @@ use Path::Tiny;
 use lib 't/lib';
 use TestUtils;
 
+plan skip_all => "catalyst.pl not available" unless system_has_catalyst;
+
 sub my_subtest {
     chdir( my $d = a_temp_dir );
     not <*> or BAIL_OUT( "temp dir should have been empty, but it's not, can't handle it!" );

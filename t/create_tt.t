@@ -4,15 +4,15 @@ use strict;
 use warnings;
 use utf8;
 use Test::Most;
-# use Test::FailWarnings;
+use Test::FailWarnings;
 use Test::Output;
 
 use lib 't/lib';
 use TestUtils;
 
-use_ok "App::CatalystStarter::Bloated", ":test";
+plan skip_all => "catalyst.pl not available" unless system_has_catalyst;
 
-clean_cat_dir;
+use_ok "App::CatalystStarter::Bloated", ":test";
 
 goto_test_dir;
 
@@ -31,7 +31,5 @@ $ARGV{"--verbose"} = 1;
 stdout_like sub { App::CatalystStarter::Bloated::_create_TT() },
     qr/\bcreated.*HTML2\.pm\b/,
     "verbose create";
-
-clean_cat_dir;
 
 done_testing

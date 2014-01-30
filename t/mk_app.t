@@ -11,6 +11,8 @@ use Path::Tiny;
 use lib 't/lib';
 use TestUtils;
 
+plan skip_all => "catalyst.pl not available" unless system_has_catalyst;
+
 use_ok "App::CatalystStarter::Bloated", ":test";
 
 my $proj_dir = Path::Tiny->cwd;
