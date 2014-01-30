@@ -113,7 +113,6 @@ sub test_dir {
 
     }
 
-    # return path( proj_dir, "t/lib/testdir", @_ );
     return path( $test_dir, @_ );
 
 }

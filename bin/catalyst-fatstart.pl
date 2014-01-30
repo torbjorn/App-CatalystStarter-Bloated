@@ -7,6 +7,7 @@ use strict;
 use autodie;
 use warnings;
 use Carp qw< carp croak confess cluck >;
+use version 'qv';
 
 use Getopt::Euclid;
 
