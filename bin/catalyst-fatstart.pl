@@ -13,11 +13,6 @@ use Getopt::Euclid;
 use App::CatalystStarter::Bloated;
 App::CatalystStarter::Bloated::run;
 
-use Test::File::ShareDir
-    -share => {
-        -module => { "App::CatalystStarter::Bloated::Initializr" => 'share' },
-    };
-
 __END__
 
 =encoding utf8
@@ -146,17 +141,14 @@ output. Remove this config line afterwards if you do not want it.
 =for Euclid:
     JSON.opt_default: "JSON"
 
-=item --[no]html5 | --[no]h5
+=item -[-]html5 | -[-]h5
 
-Default on. Use --nohtml5 or --noh5 to skip this step.
-
-Fetch a html5 template from http://www.initializr.com. Will only fetch
-the Bootstrap version with defaults. Future versions may allow this to
-be customized.
+Set up a html5 template with twitter bootstrap and jquery downloaded
+from http://www.initializr.com.
 
 When downloaded it fills root/wrapper.tt2 with content from the
-index.html from initializr.com and inserts [% content %] and touches
-root/index.tt2.
+index.html from initializr.com and inserts [% content %] and puts
+sample input in root/index.tt2.
 
 =item -[-]views
 

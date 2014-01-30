@@ -551,18 +551,16 @@ sub _create_TT {
     my $r = _catalyst_path( "C", "Root.pm" );
 
     my $substitute_this = q[$c->response->body( $c->welcome_message );];
-    (my $root = $r->slurp) =~ s|\Q$substitute_this|# $&|;
+    (my $root = $r->slurp) =~ s|\Q$substitute_this|# $&| and l->debug( "Commented response body message in sub index" );
 
     $r->spew( $root );
-
-    l->debug( "Commented response body message in sub index" );
-
 
     l->info( sprintf "Created TT view as %s::View::%s",
              @ARGV{qw/--name --TT/}
          );
 
     _verify_TT_view();
+    _verify_Root_index();
 
 } ## create.tt
 sub _create_JSON {
@@ -662,6 +660,8 @@ EOS
 
     $p->spew( $root );
 
+    _verify_Root_jumbatron();
+
 }
 
 
@@ -728,8 +728,10 @@ sub _verify_Root_index {
 
     my $root_controller = $root_controller_file->slurp;
 
-    if ( $root_controller =~ /^\s+\$c->response->body/m) {
+    if ( $root_controller =~ /^\s+\$c->response->body.*welcome_message/m ) {
        l->error( "Failed fixing Root controller. Comment out the response body line." );
+       l->error( "Root contents:" );
+       l->error( $root_controller );
     }
 
     l->debug( "Root controller set to run index.tt2" );

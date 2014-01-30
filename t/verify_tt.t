@@ -18,6 +18,7 @@ my(
     $view_with_syntax_error,
     $view_with_wrong_extension,
     $view_with_missing_wrapper,
+    $view_where_all_is_ok
 );
 
 local %ARGV = test_argv( "--TT" => "HTML" );
@@ -54,6 +55,14 @@ stderr_like(
     sub { App::CatalystStarter::Bloated::_verify_TT_view($f3) },
     qr/ didn't get WRAPPER properly configured, must be fixed manually\./,
     "view with wrapper not set handled correctly"
+);
+
+$ARGV{'--name'} = "Test";
+my $f4 = Path::Tiny->tempfile;
+$f4->spew( $view_where_all_is_ok );
+stderr_is(
+    sub { App::CatalystStarter::Bloated::_verify_TT_view($f4) },
+    "", "view where all is ok gives no error"
 );
 
 done_testing;
@@ -108,5 +117,22 @@ __PACKAGE__->config(
 
 1;
 EOV
+
+    $view_where_all_is_ok = <<'EOV';
+package Test::View::HTML;
+use Moose;
+use namespace::autoclean;
+
+extends 'Catalyst::View::TT';
+
+__PACKAGE__->config(
+    WRAPPER => 'wrapper.tt2',
+    TEMPLATE_EXTENSION => '.tt2',
+    render_die => 1,
+);
+
+1;
+EOV
+
 
 }
