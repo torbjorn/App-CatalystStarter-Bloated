@@ -8,7 +8,7 @@ use strict;
 use autodie;
 use Carp;
 
-use version; our $VERSION = qv('0.9.1');
+use version; our $VERSION = qv('0.9.2');
 
 use File::Which qw(which);
 use Path::Tiny qw(path cwd);
@@ -814,7 +814,7 @@ App::CatalystStarter::Bloated - Creates a catalyst app, a TT view, a model and a
 
 =head1 VERSION
 
-This document describes App::CatalystStarter::Bloated version 0.9.1
+This document describes App::CatalystStarter::Bloated version 0.9.2
 
 =head1 SYNOPSIS
 
