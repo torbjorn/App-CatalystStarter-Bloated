@@ -31,6 +31,7 @@ WriteMakefile(
         'Catalyst::View::TT'  => '0.41',
         'Moose'               => '2.1005',
         'namespace::autoclean'=> '0.13',
+        'IO::All'             => '0.53',
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'App-CatalystStarter-Bloated-*' },

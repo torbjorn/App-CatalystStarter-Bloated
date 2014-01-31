@@ -29,6 +29,7 @@ my $builder = Module::Build->new(
         'Catalyst::View::TT'  => '0.41',
         'Moose'               => '2.1005',
         'namespace::autoclean'=> '0.13',
+        'IO::All'             => '0.53',
     },
     configure_requires => {
         'Module::Build'       => '0.42',
