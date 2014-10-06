@@ -5,7 +5,7 @@ use warnings;
 use strict;
 use Carp;
 
-use version; our $VERSION = qv('0.9.2');
+use version; our $VERSION = qv('0.9.3');
 
 use File::ShareDir qw/module_file/;
 use Archive::Zip;
@@ -76,7 +76,7 @@ sub _setup_index {
         if ( !$div ) {
             croak "container tag not found in html template - cannot continue";
         }
-        $div->replace_content( "[% content %]" );
+        $div->content( "[% content %]" );
         l->debug( "HTML5: Wrapper content template var inserted" );
     }
 
@@ -95,12 +95,12 @@ sub _setup_index {
                      );
 
         my $h1 = $div->find( 'h1' )->first;
-        $h1->replace_content( '[% jumbotron.header %]' );
+        $h1->content( '[% jumbotron.header %]' );
         my $ps = $div->find( 'p' );
 
         my $pa = $ps->first;
 
-        $pa->replace_content( '[% jumbotron.body %]' );
+        $pa->content( '[% jumbotron.body %]' );
 
         my $i;
         $div->children->each
