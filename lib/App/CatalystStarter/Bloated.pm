@@ -8,7 +8,7 @@ use strict;
 use autodie;
 use Carp;
 
-use version; our $VERSION = qv('0.9.2');
+use version; our $VERSION = qv('0.9.3');
 
 use File::Which qw(which);
 use Path::Tiny qw(path cwd);
@@ -338,6 +338,7 @@ sub _dsn_hash_to_dsn_string {
     return $fixed_dsn;
 
 }
+
 
 ## pgpass functions
 sub _parse_pgpass {
@@ -879,26 +880,9 @@ Several. Makefile/Build should take care of them.
 
 =head1 INCOMPATIBILITIES
 
-=for author to fill in:
-    A list of any modules that this module cannot be used in conjunction
-    with. This may be due to name conflicts in the interface, or
-    competition for system or program resources, or due to internal
-    limitations of Perl (for example, many modules that use source code
-    filters are mutually incompatible).
-
 None reported.
 
-
 =head1 BUGS AND LIMITATIONS
-
-=for author to fill in:
-    A list of known problems with the module, together with some
-    indication Whether they are likely to be fixed in an upcoming
-    release. Also a list of restrictions on the features the module
-    does provide: data types that cannot be handled, performance issues
-    and the circumstances in which they may arise, practical
-    limitations on the size of data sets, special cases that are not
-    (yet) handled, etc.
 
 No bugs have been reported.
 
