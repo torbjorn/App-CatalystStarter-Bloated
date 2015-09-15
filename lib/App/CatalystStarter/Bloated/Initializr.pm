@@ -283,7 +283,7 @@ from initializr.com in your catalyst project
 
 =head1 VERSION
 
-This document describes App::CatalystStarter::Bloated::Initializr version 0.9.2
+This document describes App::CatalystStarter::Bloated::Initializr version 0.9.3
 
 =head1 SYNOPSIS
 
