@@ -815,7 +815,7 @@ App::CatalystStarter::Bloated - Creates a catalyst app, a TT view, a model and a
 
 =head1 VERSION
 
-This document describes App::CatalystStarter::Bloated version 0.9.2
+This document describes App::CatalystStarter::Bloated version 0.9.3
 
 =head1 SYNOPSIS
 

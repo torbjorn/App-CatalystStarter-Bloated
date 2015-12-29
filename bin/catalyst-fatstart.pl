@@ -11,7 +11,7 @@ use version 'qv';
 
 use Getopt::Euclid;
 
-our $VERSION = qv('0.9.2');
+our $VERSION = qv('0.9.3');
 
 use App::CatalystStarter::Bloated;
 App::CatalystStarter::Bloated::run;
@@ -28,7 +28,7 @@ you
 
 =head1 VERSION
 
-This app and its module is version 0.9.2
+This app and its module is version 0.9.3
 
 =head1 SYNOPSIS
 
